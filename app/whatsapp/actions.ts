@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
-export async function sendDailyRemindersAction() {
+export async function sendDailyRemindersAction(formData: FormData) {
   const todayStr = new Date().toISOString().split("T")[0];
   const pendingVisitsToday = await prisma.visit.findMany({
     where: { 
@@ -34,5 +34,4 @@ export async function sendDailyRemindersAction() {
   });
 
   revalidatePath("/whatsapp");
-  return reminders;
 }
