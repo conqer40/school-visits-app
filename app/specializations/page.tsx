@@ -25,7 +25,7 @@ export default async function SpecializationsPage({ searchParams }: { searchPara
         <p style={{ color: "#666", fontSize: "0.9rem", margin: 0 }}>تحديد أيام الاجتماعات لاستبعادها تلقائياً من جدول الزيارات</p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "2rem", alignItems: "start" }}>
+      <div className="grid-responsive" style={{ alignItems: "start" }}>
         {/* Form */}
         <div className="card">
           <h2 style={{ fontSize: "1.2rem", color: "var(--primary-deep-blue)", marginBottom: "1.5rem" }}>
@@ -74,43 +74,45 @@ export default async function SpecializationsPage({ searchParams }: { searchPara
         {/* Table */}
         <div className="card">
           <h2 style={{ fontSize: "1.2rem", color: "var(--primary-deep-blue)", marginBottom: "1.5rem" }}>📋 التخصصات المسجلة ({specs.length})</h2>
-          {specs.length === 0 ? (
-            <p style={{ textAlign: "center", color: "#888" }}>لا توجد تخصصات مضافة بعد</p>
-          ) : (
-            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "right" }}>
-              <thead>
-                <tr style={{ borderBottom: "2px solid var(--border)", backgroundColor: "var(--surface)" }}>
-                  <th style={{ padding: "0.75rem" }}>اسم التخصص</th>
-                  <th style={{ padding: "0.75rem" }}>يوم الاجتماع</th>
-                  <th style={{ padding: "0.75rem" }}>عدد الموجهين</th>
-                  <th style={{ padding: "0.75rem" }}>الإجراء</th>
-                </tr>
-              </thead>
-              <tbody>
-                {specs.map((spec: any) => (
-                  <tr key={spec.id} style={{ borderBottom: "1px solid var(--border-light)" }}>
-                    <td style={{ padding: "0.75rem", fontWeight: "bold" }}>{spec.name}</td>
-                    <td style={{ padding: "0.75rem" }}>
-                      {spec.meetingDay !== null && spec.meetingDay !== undefined
-                        ? <span style={{ background: "#fff3cd", padding: "2px 8px", borderRadius: "6px", fontSize: "0.85rem" }}>📅 {DAY_NAMES[spec.meetingDay]}</span>
-                        : <span style={{ color: "#999" }}>—</span>}
-                    </td>
-                    <td style={{ padding: "0.75rem" }}>
-                      <span style={{ background: "var(--surface)", padding: "2px 8px", borderRadius: "12px", fontSize: "0.85rem" }}>{spec._count.supervisors} موجه</span>
-                    </td>
-                    <td style={{ padding: "0.75rem" }}>
-                      <div style={{ display: "flex", gap: "0.8rem" }}>
-                        <Link href={`/specializations?editId=${spec.id}`} style={{ color: "var(--primary-deep-blue)", textDecoration: "none", fontSize: "0.9rem" }}>تعديل</Link>
-                        <form action={deleteSpecializationAction.bind(null, spec.id)}>
-                          <button type="submit" style={{ background: "none", border: "none", color: "var(--danger)", cursor: "pointer", fontSize: "0.9rem", fontFamily: "inherit" }}>حذف</button>
-                        </form>
-                      </div>
-                    </td>
+          <div className="table-container">
+            {specs.length === 0 ? (
+              <p style={{ textAlign: "center", padding: "2rem", color: "#888" }}>لا توجد تخصصات مضافة بعد</p>
+            ) : (
+              <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "right" }}>
+                <thead>
+                  <tr style={{ borderBottom: "2px solid var(--border)", backgroundColor: "var(--surface)" }}>
+                    <th style={{ padding: "0.75rem" }}>اسم التخصص</th>
+                    <th style={{ padding: "0.75rem" }}>يوم الاجتماع</th>
+                    <th style={{ padding: "0.75rem" }}>عدد الموجهين</th>
+                    <th style={{ padding: "0.75rem" }}>الإجراء</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                </thead>
+                <tbody>
+                  {specs.map((spec: any) => (
+                    <tr key={spec.id} style={{ borderBottom: "1px solid var(--border-light)" }}>
+                      <td style={{ padding: "0.75rem", fontWeight: "bold" }}>{spec.name}</td>
+                      <td style={{ padding: "0.75rem" }}>
+                        {spec.meetingDay !== null && spec.meetingDay !== undefined
+                          ? <span style={{ background: "#fff3cd", padding: "2px 8px", borderRadius: "6px", fontSize: "0.85rem" }}>📅 {DAY_NAMES[spec.meetingDay]}</span>
+                          : <span style={{ color: "#999" }}>—</span>}
+                      </td>
+                      <td style={{ padding: "0.75rem" }}>
+                        <span style={{ background: "var(--surface)", padding: "2px 8px", borderRadius: "12px", fontSize: "0.85rem" }}>{spec._count.supervisors} موجه</span>
+                      </td>
+                      <td style={{ padding: "0.75rem" }}>
+                        <div style={{ display: "flex", gap: "0.8rem" }}>
+                          <Link href={`/specializations?editId=${spec.id}`} style={{ color: "var(--primary-deep-blue)", textDecoration: "none", fontSize: "0.9rem" }}>تعديل</Link>
+                          <form action={deleteSpecializationAction.bind(null, spec.id)}>
+                            <button type="submit" style={{ background: "none", border: "none", color: "var(--danger)", cursor: "pointer", fontSize: "0.9rem", fontFamily: "inherit" }}>حذف</button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
       </div>
     </div>

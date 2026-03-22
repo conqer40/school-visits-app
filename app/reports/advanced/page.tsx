@@ -60,7 +60,7 @@ export default async function AdvancedReportsPage({ searchParams }: { searchPara
     <div dir="rtl" className="report-container">
       {/* Filters - Hidden in Print */}
       <div className="no-print" style={{ marginBottom: "2.5rem", background: "white", padding: "1.5rem 2rem", borderRadius: "16px", boxShadow: "0 4px 15px rgba(0,0,0,0.05)", borderTop: "5px solid var(--primary-deep-blue)" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem", borderBottom: "1px solid #eee", paddingBottom: "1rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem", borderBottom: "1px solid #eee", paddingBottom: "1rem", flexWrap: "wrap", gap: "1rem" }}>
            <h2 style={{ fontSize: "1.3rem", margin: 0, color: "var(--primary-deep-blue)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
              <span style={{ fontSize: "1.5rem" }}>⚙️</span> إعدادات تخصيص الطباعة والتقارير
            </h2>
@@ -118,7 +118,7 @@ export default async function AdvancedReportsPage({ searchParams }: { searchPara
       </div>
 
       {/* Report Table */}
-      <div className="card" style={{ padding: "0" }}>
+      <div className="table-container" style={{ padding: "0" }}>
         <table className="report-table" style={{ width: "100%", borderCollapse: "collapse", textAlign: "center" }}>
           <thead>
             <tr style={{ background: "#f0f0f0", borderBottom: "2px solid #000" }}>

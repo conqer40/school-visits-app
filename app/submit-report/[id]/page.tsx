@@ -20,7 +20,7 @@ export default async function SubmitReportPage({ params }: { params: Promise<{ i
   if (!visit || visit.supervisorId !== user.supervisorId) redirect("/my-schedule");
 
   return (
-    <div dir="rtl" style={{ maxWidth: "600px", margin: "0 auto" }}>
+    <div dir="rtl" style={{ maxWidth: "600px", margin: "0 auto", padding: "0 1rem" }}>
       <div className="card">
         <h1 style={{ color: "var(--primary-deep-blue)", fontSize: "1.5rem" }}>📝 تقديم تقرير الزيارة</h1>
         <p style={{ color: "#666" }}>المدرسة: <strong>{visit.school.name}</strong></p>

@@ -51,14 +51,13 @@ export default function LoginPage() {
       fontFamily: "inherit",
       padding: "1rem",
     }}>
-      <div style={{
-        background: "white",
-        borderRadius: "16px",
-        padding: "3rem",
+      <div className="card" style={{
+        padding: "2rem",
         width: "100%",
-        maxWidth: "420px",
+        maxWidth: "400px",
         boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
-        textAlign: "center"
+        textAlign: "center",
+        border: "none"
       }}>
         <div style={{ marginBottom: "2.5rem" }}>
           <div style={{ 

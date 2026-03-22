@@ -35,10 +35,10 @@ export default async function SupervisorsPage({ searchParams }: { searchParams: 
 
   return (
     <div dir="rtl">
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", flexWrap: "wrap", gap: "1rem" }}>
         <h1 style={{ color: "var(--primary-deep-blue)", margin: 0 }}>👥 إدارة الموجهين</h1>
 
-        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "1rem", alignItems: "center", flexWrap: "wrap" }}>
           <Link href="/specializations" style={{ fontSize: "0.85rem", padding: "0.4rem 0.8rem", border: "1px solid var(--primary-deep-blue)", borderRadius: "8px", textDecoration: "none", color: "var(--primary-deep-blue)" }}>
             📚 إدارة التخصصات
           </Link>
@@ -61,7 +61,7 @@ export default async function SupervisorsPage({ searchParams }: { searchParams: 
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1.8fr", gap: "2rem", alignItems: "start" }}>
+      <div className="grid-responsive" style={{ alignItems: "start" }}>
 
         {/* Add/Edit Form */}
         <div className="card">
@@ -175,7 +175,7 @@ export default async function SupervisorsPage({ searchParams }: { searchParams: 
         {/* Supervisors Table */}
         <div className="card">
           <h2 style={{ fontSize: "1.2rem", color: "var(--primary-deep-blue)", marginBottom: "1.5rem" }}>📋 قائمة الموجهين ({supervisors.length})</h2>
-          <div style={{ overflowX: "auto" }}>
+          <div className="table-container">
             <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "right" }}>
               <thead>
                 <tr style={{ borderBottom: "2px solid var(--border)", backgroundColor: "var(--surface)" }}>

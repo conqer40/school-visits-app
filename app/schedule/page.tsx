@@ -33,10 +33,10 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "1rem" }}>
         <h1 style={{ color: "var(--primary-deep-blue)", margin: 0 }}>📅 الجدول الشهري المعتمد</h1>
         
-        <div style={{ display: "flex", gap: "1rem" }}>
+        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
           <form action={clearPendingScheduleAction}>
             <button
               type="submit"
@@ -74,7 +74,7 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
         </form>
       </div>
 
-      <div className="card" style={{ overflowX: "auto" }}>
+      <div className="table-container">
         <table
           style={{ width: "100%", borderCollapse: "collapse", textAlign: "right" }}
         >

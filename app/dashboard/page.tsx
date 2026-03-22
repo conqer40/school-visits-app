@@ -36,7 +36,7 @@ export default async function DashboardPage() {
         <p style={{ color: "var(--accent-gold)", fontWeight: "bold", margin: "0.5rem 0" }}>
           إدارة غرب الزقازيق التعليمية — تحت إشراف أ. محمد العسيلى
         </p>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
           <p style={{ color: "#888", fontSize: "0.9rem" }}>
             التاريخ الحالي: {egyptDate(new Date())} | الساعة: {egyptTime(new Date())}
           </p>
@@ -46,7 +46,7 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <div className="stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.5rem", marginBottom: "3rem" }}>
+      <div className="grid-responsive" style={{ marginBottom: "3rem" }}>
         <div className="card">
           <h3 style={{ fontSize: "1rem", color: "#666" }}>إجمالي المدارس</h3>
           <p style={{ fontSize: "2.5rem", fontWeight: "bold", color: "var(--primary-deep-blue)" }}>{totalSchools}</p>
@@ -65,7 +65,7 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "2fr 1.2fr", gap: "2rem" }}>
+      <div className="grid-responsive" style={{ alignItems: "stretch" }}>
         <section className="card">
           <h2 style={{ fontSize: "1.2rem", marginBottom: "1.5rem" }}>📝 آخر التقارير المرفوعة</h2>
           {recentReports.length === 0 ? (

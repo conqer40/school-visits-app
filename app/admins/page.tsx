@@ -23,7 +23,7 @@ export default async function AdminsPage({ searchParams }: { searchParams: Promi
     <div dir="rtl">
       <h1 style={{ color: "var(--primary-deep-blue)", marginBottom: "2rem" }}>🛡️ إدارة الإداريين</h1>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "2rem", alignItems: "start" }}>
+      <div className="grid-responsive" style={{ alignItems: "start" }}>
         
         {/* Add/Edit Admin Form */}
         <div className="card">

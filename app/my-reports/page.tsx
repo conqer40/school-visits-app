@@ -22,7 +22,7 @@ export default async function MyReportsPage() {
         {reports.length === 0 ? (
           <p style={{ textAlign: "center", padding: "3rem", color: "#999" }}>لم تقم بتقديم أي تقارير بعد.</p>
         ) : (
-          <div style={{ overflowX: "auto" }}>
+          <div className="table-container">
             <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "right" }}>
               <thead>
                 <tr style={{ borderBottom: "2px solid var(--border)", backgroundColor: "var(--surface)" }}>

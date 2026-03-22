@@ -31,7 +31,7 @@ export default async function ReportsPage() {
     <div dir="rtl">
       <h1 style={{ color: "var(--primary-deep-blue)", marginBottom: "2rem" }}>📊 التقارير والنشاط</h1>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "1.5rem", marginBottom: "2.5rem" }}>
+      <div className="grid-responsive" style={{ marginBottom: "2.5rem" }}>
         <div className="card" style={{ borderRight: "4px solid var(--primary-deep-blue)" }}>
           <h3 style={{ margin: 0, fontSize: "0.9rem", color: "#666" }}>إجمالي المدارس</h3>
           <p style={{ fontSize: "2rem", fontWeight: "bold", margin: "0.5rem 0" }}>{totalSchools}</p>
@@ -48,7 +48,7 @@ export default async function ReportsPage() {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+      <div className="grid-responsive">
         {/* Reports Section */}
         <section className="card">
           <h2 style={{ fontSize: "1.2rem", marginBottom: "1.5rem", borderBottom: "2px solid var(--border-light)", paddingBottom: "0.5rem" }}>

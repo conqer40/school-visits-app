@@ -25,17 +25,17 @@ export default async function MySchedulePage() {
 
   return (
     <div dir="rtl">
-      <div style={{ marginBottom: "2rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ marginBottom: "2rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
         <div>
-          <h1 style={{ color: "var(--primary-deep-blue)" }}>جدول زياراتي</h1>
-          <p style={{ color: "var(--border-dark)" }}>اهلا بك، أ/ {user.supervisor?.name}</p>
+          <h1 style={{ color: "var(--primary-deep-blue)", margin: 0 }}>جدول زياراتي</h1>
+          <p style={{ color: "var(--border-dark)", margin: "0.4rem 0 0" }}>اهلا بك، أ/ {user.supervisor?.name}</p>
         </div>
         <Link href="/my-schedule/settings" style={{ padding: "0.6rem 1rem", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "8px", textDecoration: "none", color: "#666", fontSize: "0.9rem" }}>
           ⚙️ إعدادات الحساب
         </Link>
       </div>
 
-      <div className="stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "1.5rem", marginBottom: "2rem" }}>
+      <div className="grid-responsive" style={{ marginBottom: "2rem" }}>
         <div className="card" style={{ padding: "1.5rem", textAlign: "center" }}>
           <h3 style={{ fontSize: "1rem", color: "#666", margin: "0 0 0.5rem 0" }}>إجمالي الزيارات</h3>
           <p style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--primary-deep-blue)", margin: 0 }}>{totalCount}</p>
@@ -87,7 +87,7 @@ export default async function MySchedulePage() {
         {/* Full Schedule Table */}
         <section className="card">
           <h2 style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>📅 الجدول الكامل لهذا الشهر</h2>
-          <div style={{ overflowX: "auto" }}>
+          <div className="table-container">
             <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "right" }}>
               <thead>
                 <tr style={{ borderBottom: "2px solid var(--border)", backgroundColor: "var(--surface)" }}>
