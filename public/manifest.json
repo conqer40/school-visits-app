@@ -1,0 +1,21 @@
+{
+  "name": "نظام الزيارات المدرسية — غرب الزقازيق",
+  "short_name": "زيارات الغرب",
+  "description": "نظام توزيع الموجهين — إدارة غرب الزقازيق التعليمية",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#001f3f",
+  "theme_color": "#001f3f",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

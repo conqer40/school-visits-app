@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      String   @default("SUPERVISOR") // ADMIN, SUPERVISOR
+  supervisorId Int?  @unique
+  supervisor Supervisor? @relation(fields: [supervisorId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model School {
+  id              Int      @id @default(autoincrement())
+  name            String
+  administration  String   @default("غرب الزقازيق التعليمية")
+  levels          String   @default("ابتدائي,إعدادي") // Comma-separated
+  types           String   @default("رسمي") // Comma-separated: رسمي,لغات,خاص...
+  shift           String   @default("صباحي") // صباحي أو مسائي
+  workingDays     String   @default("السبت,الأحد,الإثنين,الثلاثاء,الأربعاء,الخميس")
+  address         String?
+  lastVisitDate   DateTime?
+  totalVisits     Int      @default(0)
+  priorityScore   Int      @default(0)
+  status          String   @default("ACTIVE")
+  visits          Visit[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Specialization {
+  id              Int      @id @default(autoincrement())
+  name            String   @unique
+  meetingDay      Int?     // 0=الأحد, 1=الاثنين, 2=الثلاثاء, 3=الأربعاء, 4=الخميس
+  supervisors     Supervisor[]
+  createdAt       DateTime @default(now())
+}
+
+model Supervisor {
+  id              Int      @id @default(autoincrement())
+  name            String
+  phone           String?
+  levels          String   @default("ابتدائي,إعدادي") // Comma-separated
+  types           String   @default("رسمي") // Comma-separated
+  specialization  String?  // Legacy or display
+  specializationId Int?
+  spec            Specialization? @relation(fields: [specializationId], references: [id])
+  region          String   @default("غرب الزقازيق")
+  workloadScore   Int      @default(0)
+  isActive        Boolean  @default(true)
+  visits          Visit[]
+  reports         VisitReport[]
+  user            User?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Visit {
+  id              Int        @id @default(autoincrement())
+  school          School     @relation(fields: [schoolId], references: [id])
+  schoolId        Int
+  supervisor      Supervisor @relation(fields: [supervisorId], references: [id])
+  supervisorId    Int
+  date            DateTime
+  dayOfWeek       String
+  status          String     @default("PENDING") // PENDING, COMPLETED, MISSED, EXCUSED
+  checkInTime     DateTime?
+  checkInLat      Float?
+  checkInLng      Float?
+  notes           String?
+  report          VisitReport?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@unique([schoolId, date])
+}
+
+model VisitReport {
+  id            Int      @id @default(autoincrement())
+  visit         Visit    @relation(fields: [visitId], references: [id])
+  visitId       Int      @unique
+  supervisor    Supervisor @relation(fields: [supervisorId], references: [id])
+  supervisorId  Int
+  reportText    String
+  isExcuse      Boolean  @default(false) // true = اعتذار
+  excuseReason  String?
+  createdAt     DateTime @default(now())
+}
+
+model Log {
+  id        Int      @id @default(autoincrement())
+  action    String
+  user      String   @default("SYSTEM")
+  details   String?
+  createdAt DateTime @default(now())
+}
