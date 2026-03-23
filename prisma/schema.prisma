@@ -26,6 +26,9 @@ model School {
   shift           String   @default("صباحي") // صباحي أو مسائي
   workingDays     String   @default("السبت,الأحد,الإثنين,الثلاثاء,الأربعاء,الخميس")
   address         String?
+  principalName   String?  // اسم المدير
+  principalPhone  String?  // رقم هاتف المدير
+  googleMapsUrl   String?  // رابط خريطة جوجل
   lastVisitDate   DateTime?
   totalVisits     Int      @default(0)
   priorityScore   Int      @default(0)

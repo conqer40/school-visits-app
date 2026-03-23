@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import { addSchoolAction, editSchoolAction, deleteSchoolAction } from "./actions";
+import { deleteSchoolAction } from "./actions";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { importSchoolsCSVAction } from "../admin/import-actions";
 import ExcelExportButton from "@/app/components/ExcelExportButton";
@@ -13,6 +14,70 @@ const CSV_BOM = "\uFEFF";
 const LEVELS_OPTIONS = ["رياض أطفال", "ابتدائي", "إعدادي", "ثانوي عام", "ثانوي فني", "تربية خاصة"];
 const TYPES_OPTIONS = ["رسمي", "لغات", "خاص", "تجاري", "صناعي", "زراعي", "فندقي", "مهني"];
 const WORKING_DAYS_OPTIONS = ["السبت", "الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس"];
+
+export async function addSchoolAction(formData: FormData) {
+  const name = formData.get("name") as string;
+  const admin = formData.get("admin") as string;
+  const shift = formData.get("shift") as string || "صباحي";
+  const levels = formData.getAll("levels").join(",");
+  const types = formData.getAll("types").join(",");
+  const principalName = formData.get("principalName") as string;
+  const principalPhone = formData.get("principalPhone") as string;
+  const googleMapsUrl = formData.get("googleMapsUrl") as string;
+  
+  // Default string if none provided = fall back to default from schema
+  let workingDaysArray = formData.getAll("workingDays");
+  let workingDays = workingDaysArray.length > 0 ? workingDaysArray.join(",") : "السبت,الأحد,الإثنين,الثلاثاء,الأربعاء,الخميس";
+
+  await (prisma as any).school.create({
+    data: { 
+      name, 
+      administration: admin, 
+      levels, 
+      types, 
+      shift, 
+      workingDays,
+      principalName,
+      principalPhone,
+      googleMapsUrl
+    },
+  });
+
+  revalidatePath("/schools");
+  revalidatePath("/");
+}
+
+export async function editSchoolAction(id: number, formData: FormData) {
+  const name = formData.get("name") as string;
+  const admin = formData.get("admin") as string;
+  const shift = formData.get("shift") as string || "صباحي";
+  const levels = formData.getAll("levels").join(",");
+  const types = formData.getAll("types").join(",");
+  const principalName = formData.get("principalName") as string;
+  const principalPhone = formData.get("principalPhone") as string;
+  const googleMapsUrl = formData.get("googleMapsUrl") as string;
+
+  let workingDaysArray = formData.getAll("workingDays");
+  let workingDays = workingDaysArray.length > 0 ? workingDaysArray.join(",") : "السبت,الأحد,الإثنين,الثلاثاء,الأربعاء,الخميس";
+
+  await (prisma as any).school.update({
+    where: { id },
+    data: { 
+      name, 
+      administration: admin, 
+      levels, 
+      types, 
+      shift, 
+      workingDays,
+      principalName,
+      principalPhone,
+      googleMapsUrl
+    },
+  });
+
+  revalidatePath("/schools");
+  revalidatePath("/");
+}
 
 export default async function SchoolsPage({ searchParams }: { searchParams: Promise<{ editId?: string }> }) {
   const { editId: editIdRaw } = await searchParams;
@@ -63,6 +128,37 @@ export default async function SchoolsPage({ searchParams }: { searchParams: Prom
                 defaultValue={schoolToEdit?.name || ""}
                 required
                 placeholder="مثال: مدرسة السادات..."
+                style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border)", fontFamily: "inherit", boxSizing: "border-box" }}
+              />
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div>
+                <label style={{ display: "block", marginBottom: "0.4rem", fontSize: "0.9rem", fontWeight: "bold" }}>اسم المدير:</label>
+                <input
+                  name="principalName"
+                  defaultValue={schoolToEdit?.principalName || ""}
+                  placeholder="اسم مدير المدرسة"
+                  style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border)", fontFamily: "inherit", boxSizing: "border-box" }}
+                />
+              </div>
+              <div>
+                <label style={{ display: "block", marginBottom: "0.4rem", fontSize: "0.9rem", fontWeight: "bold" }}>رقم الهاتف:</label>
+                <input
+                  name="principalPhone"
+                  defaultValue={schoolToEdit?.principalPhone || ""}
+                  placeholder="رقم هاتف المدير"
+                  style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border)", fontFamily: "inherit", boxSizing: "border-box" }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label style={{ display: "block", marginBottom: "0.4rem", fontSize: "0.9rem", fontWeight: "bold" }}>رابط خريطة جوجل:</label>
+              <input
+                name="googleMapsUrl"
+                defaultValue={schoolToEdit?.googleMapsUrl || ""}
+                placeholder="https://maps.app.goo.gl/..."
                 style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border)", fontFamily: "inherit", boxSizing: "border-box" }}
               />
             </div>
@@ -154,52 +250,97 @@ export default async function SchoolsPage({ searchParams }: { searchParams: Prom
             <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "right" }}>
               <thead>
                 <tr style={{ borderBottom: "2px solid var(--border)", backgroundColor: "var(--surface)" }}>
-                  <th style={{ padding: "0.75rem" }}>المدرسة</th>
-                  <th style={{ padding: "0.75rem" }}>المراحل / الأنواع</th>
-                  <th style={{ padding: "0.75rem" }}>أيام العمل</th>
-                  <th style={{ padding: "0.75rem" }}>الإجراء</th>
+                    <th style={{ padding: "1rem", textAlign: "right", borderBottom: "2px solid var(--border-light)" }}>المدرسة</th>
+                    <th style={{ padding: "1rem", textAlign: "right", borderBottom: "2px solid var(--border-light)" }}>المدير / التواصل</th>
+                    <th style={{ padding: "1rem", textAlign: "right", borderBottom: "2px solid var(--border-light)" }}>الفترة</th>
+                    <th style={{ padding: "1rem", textAlign: "right", borderBottom: "2px solid var(--border-light)" }}>الموقع</th>
+                    <th style={{ padding: "1rem", textAlign: "center", borderBottom: "2px solid var(--border-light)" }}>إجراءات</th>
                 </tr>
               </thead>
               <tbody>
                 {schools.map((school: any) => (
                   <tr key={school.id} style={{ borderBottom: "1px solid var(--border-light)" }}>
-                    <td style={{ padding: "0.75rem" }}>
-                      <div style={{ fontWeight: "bold" }}>{school.name}</div>
+                    <td style={{ padding: "1rem" }}>
+                      <div style={{ fontWeight: "bold", fontSize: "1rem", color: "var(--primary-deep-blue)" }}>{school.name}</div>
+                      <div style={{ fontSize: "0.75rem", color: "#888", marginTop: "0.2rem" }}>{school.administration}</div>
+                    </td>
+                    <td style={{ padding: "1rem" }}>
+                      {school.principalName ? (
+                        <>
+                          <div style={{ fontWeight: "500", fontSize: "0.9rem" }}>👤 {school.principalName}</div>
+                          {school.principalPhone && (
+                            <div style={{ fontSize: "0.85rem", color: "var(--primary-deep-blue)", direction: "ltr", textAlign: "right", marginTop: "0.2rem" }}>
+                              📞 {school.principalPhone}
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <span style={{ color: "#ccc", fontSize: "0.8rem" }}>غير مسجل</span>
+                      )}
+                    </td>
+                    <td style={{ padding: "1rem" }}>
                       <span style={{
                         display: "inline-block",
-                        marginTop: "4px",
-                        background: school.shift === "مسائي" ? "#e3f2fd" : "#fff8e1",
-                        color: school.shift === "مسائي" ? "#1565c0" : "#e65100",
-                        padding: "2px 8px",
-                        borderRadius: "12px",
+                        background: school.shift === "مسائي" ? "#e3f2fd" : (school.shift === "صباحي ومسائي" ? "#f3e5f5" : "#fff8e1"),
+                        color: school.shift === "مسائي" ? "#1565c0" : (school.shift === "صباحي ومسائي" ? "#6a1b9a" : "#e65100"),
+                        padding: "4px 10px",
+                        borderRadius: "20px",
                         fontSize: "0.75rem",
                         fontWeight: "bold",
                       }}>
-                        {school.shift === "مسائي" ? "🌆 مسائي" : "☀️ صباحي"}
+                        {school.shift === "مسائي" ? "🌆 مسائي" : (school.shift === "صباحي ومسائي" ? "🌓 فترتين" : "☀️ صباحي")}
                       </span>
                     </td>
-                    <td style={{ padding: "0.75rem" }}>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-                        {(school.levels ? school.levels.split(",") : []).map((l: string, i: number) => (
-                          <span key={i} style={{ background: "#e0f2f1", padding: "2px 6px", borderRadius: "4px", fontSize: "0.75rem", color: "#00695c" }}>{l}</span>
-                        ))}
-                        {(school.types ? school.types.split(",") : []).map((t: string, i: number) => (
-                          <span key={`t-${i}`} style={{ background: "#f3e5f5", padding: "2px 6px", borderRadius: "4px", fontSize: "0.75rem", color: "#6a1b9a" }}>{t}</span>
-                        ))}
-                      </div>
+                    <td style={{ padding: "1rem" }}>
+                      {school.googleMapsUrl ? (
+                        <a 
+                          href={school.googleMapsUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "4px",
+                            background: "#ea433515",
+                            color: "#ea4335",
+                            padding: "4px 8px",
+                            borderRadius: "6px",
+                            fontSize: "0.8rem",
+                            textDecoration: "none",
+                            fontWeight: "500"
+                          }}
+                        >
+                          📍 الخريطة
+                        </a>
+                      ) : (
+                        <span style={{ color: "#ccc", fontSize: "0.8rem" }}>لا يوجد رابط</span>
+                      )}
                     </td>
-                    <td style={{ padding: "0.75rem" }}>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "2px", maxWidth: "120px" }}>
-                        {(school.workingDays ? school.workingDays.split(",") : []).map((w: string, i: number) => (
-                          <span key={`w-${i}`} style={{ background: "#eeeeee", padding: "2px 4px", borderRadius: "4px", fontSize: "0.7rem", color: "#424242" }}>{w}</span>
-                        ))}
-                      </div>
-                    </td>
-                    <td style={{ padding: "0.75rem" }}>
-                      <div style={{ display: "flex", gap: "0.5rem" }}>
-                        <Link href={`/schools?editId=${school.id}`} style={{ color: "var(--primary-deep-blue)", textDecoration: "none", fontSize: "0.9rem" }}>تعديل</Link>
-                        <form action={deleteSchoolAction.bind(null, school.id)}>
-                          <button type="submit" style={{ background: "none", border: "none", color: "var(--danger)", cursor: "pointer", fontSize: "0.9rem", padding: 0, fontFamily: "inherit" }}>حذف</button>
+                    <td style={{ padding: "1rem", textAlign: "center" }}>
+                      <div style={{ display: "flex", gap: "0.8rem", justifyContent: "center" }}>
+                        <Link href={`/schools?editId=${school.id}`} style={{ 
+                          color: "var(--primary-deep-blue)", 
+                          textDecoration: "none", 
+                          fontSize: "0.85rem",
+                          padding: "4px 12px",
+                          border: "1px solid var(--primary-deep-blue)",
+                          borderRadius: "6px"
+                        }}>
+                          تعديل
+                        </Link>
+                        <form action={deleteSchoolAction.bind(null, school.id)} onSubmit={(e) => !confirm("هل أنت متأكد من حذف هذه المدرسة؟") && e.preventDefault()}>
+                          <button type="submit" style={{ 
+                            background: "rgba(239, 68, 68, 0.1)", 
+                            border: "1px solid rgba(239, 68, 68, 0.2)", 
+                            color: "#ef4444", 
+                            cursor: "pointer", 
+                            fontSize: "0.85rem", 
+                            padding: "4px 12px", 
+                            borderRadius: "6px",
+                            fontFamily: "inherit" 
+                          }}>
+                            حذف
+                          </button>
                         </form>
                       </div>
                     </td>
