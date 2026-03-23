@@ -13,17 +13,36 @@ export async function addSchoolAction(formData: FormData) {
   let workingDaysArray = formData.getAll("workingDays");
   let workingDays = workingDaysArray.length > 0 ? workingDaysArray.join(",") : "السبت,الأحد,الإثنين,الثلاثاء,الأربعاء,الخميس";
 
+  const principalName = formData.get("principalName") as string;
+  const principalPhone = formData.get("principalPhone") as string;
+  const googleMapsUrl = formData.get("googleMapsUrl") as string;
+
   await (prisma as any).school.create({
-    data: { name, administration: admin, levels, types, shift, workingDays },
+    data: { 
+      name, 
+      administration: admin, 
+      levels, 
+      types, 
+      shift, 
+      workingDays,
+      principalName,
+      principalPhone,
+      googleMapsUrl
+    },
   });
 
   revalidatePath("/schools");
   revalidatePath("/");
 }
 
-export async function editSchoolAction(id: number, formData: FormData) {
+export async function editSchoolAction(formData: FormData) {
+  const idRaw = formData.get("schoolId") as string;
+  const id = parseInt(idRaw);
   const name = formData.get("name") as string;
   const admin = formData.get("admin") as string;
+  const principalName = formData.get("principalName") as string;
+  const principalPhone = formData.get("principalPhone") as string;
+  const googleMapsUrl = formData.get("googleMapsUrl") as string;
   const shift = formData.get("shift") as string || "صباحي";
   const levels = formData.getAll("levels").join(",");
   const types = formData.getAll("types").join(",");
@@ -33,7 +52,17 @@ export async function editSchoolAction(id: number, formData: FormData) {
 
   await (prisma as any).school.update({
     where: { id },
-    data: { name, administration: admin, levels, types, shift, workingDays },
+    data: { 
+      name, 
+      administration: admin, 
+      levels, 
+      types, 
+      shift, 
+      workingDays,
+      principalName,
+      principalPhone,
+      googleMapsUrl
+    },
   });
 
   revalidatePath("/schools");
