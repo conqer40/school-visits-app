@@ -5,25 +5,11 @@ import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { importSchoolsCSVAction } from "../admin/import-actions";
 import ExcelExportButton from "@/app/components/ExcelExportButton";
+import DeleteSchoolButton from "@/app/components/DeleteSchoolButton";
 
 export const dynamic = "force-dynamic";
 
-export async function deleteSchoolAction(formData: FormData) {
-  const idRaw = formData.get("schoolId") as string;
-  const id = parseInt(idRaw);
-  
-  // 1. Delete associated visit reports first
-  await (prisma as any).visitReport.deleteMany({
-    where: { visit: { schoolId: id } }
-  });
-  // 2. Delete associated visits
-  await (prisma as any).visit.deleteMany({ where: { schoolId: id } });
-  // 3. Delete school
-  await (prisma as any).school.delete({ where: { id } });
-  
-  revalidatePath("/schools");
-  revalidatePath("/");
-}
+export async function addSchoolAction(formData: FormData) {
 
 const CSV_BOM = "\uFEFF";
 
@@ -347,21 +333,7 @@ export default async function SchoolsPage({ searchParams }: { searchParams: Prom
                         }}>
                           تعديل
                         </Link>
-                        <form action={deleteSchoolAction}>
-                          <input type="hidden" name="schoolId" value={school.id} />
-                          <button type="submit" style={{ 
-                            background: "rgba(239, 68, 68, 0.1)", 
-                            border: "1px solid rgba(239, 68, 68, 0.2)", 
-                            color: "#ef4444", 
-                            cursor: "pointer", 
-                            fontSize: "0.85rem", 
-                            padding: "4px 12px", 
-                            borderRadius: "6px",
-                            fontFamily: "inherit" 
-                          }}>
-                            حذف
-                          </button>
-                        </form>
+                        <DeleteSchoolButton schoolId={school.id} />
                       </div>
                     </td>
                   </tr>
