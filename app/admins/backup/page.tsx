@@ -77,73 +77,115 @@ export default function BackupPage() {
   };
 
   return (
-    <div className="container mx-auto p-4 md:p-8">
-      <h1 className="text-2xl font-bold mb-6 text-primary">النسخ الاحتياطي وإعادة الضبط</h1>
+    <div dir="rtl" style={{ padding: "2rem", maxWidth: "1000px", margin: "0 auto" }}>
+      <div style={{ marginBottom: "2rem", textAlign: "center" }}>
+        <h1 style={{ color: "var(--primary-deep-blue)", fontSize: "2rem", marginBottom: "0.5rem" }}>⚙️ صيانة النظام والبيانات</h1>
+        <p style={{ color: "#666" }}>إدارة النسخ الاحتياطي، استعادة البيانات، وإعادة ضبط المصنع</p>
+      </div>
 
       {message && (
-        <div className={`p-4 mb-6 rounded-lg ${message.type === "success" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-          {message.text}
+        <div style={{
+          padding: "1rem 1.5rem",
+          borderRadius: "12px",
+          marginBottom: "2rem",
+          backgroundColor: message.type === "success" ? "#e8f5e9" : "#ffebee",
+          color: message.type === "success" ? "#2e7d32" : "#c62828",
+          border: `1px solid ${message.type === "success" ? "#a5d6a7" : "#ef9a9a"}`,
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+          fontWeight: "bold",
+          animation: "fadeIn 0.3s ease-out"
+        }}>
+          {message.type === "success" ? "✅" : "❌"} {message.text}
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid-responsive" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "2rem" }}>
+        
         {/* Export Card */}
-        <div className="card-glass p-6 rounded-xl hover-glow">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-blue-500/10 rounded-lg text-blue-500 text-2xl">📥</div>
-            <div>
-              <h2 className="text-xl font-semibold">تصدير نسخة احتياطية</h2>
-              <p className="text-sm opacity-70 italic">تحميل كافة بيانات السيستم في ملف واحد</p>
-            </div>
+        <div className="card" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", transition: "transform 0.2s" }}>
+          <div>
+            <div style={{ width: "50px", height: "50px", background: "#e3f2fd", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem", marginBottom: "1rem" }}>📥</div>
+            <h2 style={{ fontSize: "1.25rem", color: "var(--primary-deep-blue)", marginBottom: "0.5rem" }}>تصدير نسخة احتياطية</h2>
+            <p style={{ fontSize: "0.9rem", color: "#666", marginBottom: "1.5rem", lineHeight: "1.5" }}>تحميل كافة بيانات النظام (المدار، الموجهين، الزيارات، التقارير) في ملف JSON آمن للحتفاظ به.</p>
           </div>
           <button
             onClick={handleExport}
             disabled={loading}
-            className="w-full btn-primary py-3 rounded-lg font-bold disabled:opacity-50"
+            className="btn-primary"
+            style={{ width: "100%", padding: "0.8rem", borderRadius: "8px", fontWeight: "bold" }}
           >
-            {loading ? "جاري التجهيز..." : "تحميل النسخة الاحتياطية (JSON)"}
+            {loading ? "جاري التجميع..." : "تحميل النسخة الاحتياطية"}
           </button>
         </div>
 
         {/* Import Card */}
-        <div className="card-glass p-6 rounded-xl hover-glow">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-green-500/10 rounded-lg text-green-500 text-2xl">📤</div>
-            <div>
-              <h2 className="text-xl font-semibold">استعادة نسخة احتياطية</h2>
-              <p className="text-sm opacity-70 italic">رفع ملف JSON محفوظ سابقاً لاسترجاع البيانات</p>
-            </div>
+        <div className="card" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div>
+            <div style={{ width: "50px", height: "50px", background: "#e8f5e9", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem", marginBottom: "1rem" }}>📤</div>
+            <h2 style={{ fontSize: "1.25rem", color: "var(--primary-deep-blue)", marginBottom: "0.5rem" }}>استعادة نسخة احتياطية</h2>
+            <p style={{ fontSize: "0.9rem", color: "#666", marginBottom: "1.5rem", lineHeight: "1.5" }}>استرجاع بياناتك من ملف محفوظ سابقاً. <span style={{ color: "#c62828", fontWeight: "bold" }}>تنبيه: سيمسح البيانات الحالية!</span></p>
           </div>
-          <label className="block w-full cursor-pointer bg-white/5 border-2 border-dashed border-white/20 hover:border-primary/50 text-center py-3 rounded-lg font-bold transition-all">
-            {loading ? "جاري الاستعادة..." : "اختر ملف النسخة الاحتياطية"}
-            <input
-              type="file"
-              accept=".json"
-              onChange={handleImport}
-              disabled={loading}
-              className="hidden"
-            />
+          <label style={{ 
+            display: "block", 
+            textAlign: "center", 
+            padding: "0.8rem", 
+            background: "white", 
+            border: "2px dashed var(--primary-deep-blue)", 
+            color: "var(--primary-deep-blue)", 
+            borderRadius: "8px", 
+            cursor: "pointer", 
+            fontWeight: "bold",
+            transition: "all 0.2s"
+          }} 
+          onMouseOver={(e) => e.currentTarget.style.background = "#f0f7ff"}
+          onMouseOut={(e) => e.currentTarget.style.background = "white"}
+          >
+            {loading ? "جاري الاستعادة..." : "اختر ملف واسترجع البيانات"}
+            <input type="file" accept=".json" onChange={handleImport} disabled={loading} style={{ display: "none" }} />
           </label>
         </div>
 
-        {/* Factory Reset Card */}
-        <div className="card-glass p-6 rounded-xl hover-glow border-red-500/30 md:col-span-2">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-red-500/10 rounded-lg text-red-500 text-2xl">⚠️</div>
-            <div>
-              <h2 className="text-xl font-semibold text-red-500">إعادة ضبط المصنع</h2>
-              <p className="text-sm opacity-70 italic">مسح شامل لكافة البيانات (مدارس، موجهين، زيارات، تقارير) مع الإبقاء على حسابات الأدمن</p>
+        {/* Reset Card */}
+        <div className="card" style={{ gridColumn: "1 / -1", border: "1px solid #ffcdd2", background: "#fff9f9" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: "1.5rem", flexWrap: "wrap" }}>
+            <div style={{ width: "60px", height: "60px", background: "#ffebee", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem", flexShrink: 0 }}>⚠️</div>
+            <div style={{ flex: 1 }}>
+              <h2 style={{ fontSize: "1.25rem", color: "#c62828", marginBottom: "0.5rem" }}>إعادة ضبط المصنع (حذف شامل)</h2>
+              <p style={{ fontSize: "0.9rem", color: "#666", marginBottom: "1.5rem", lineHeight: "1.6" }}>
+                هذا الإجراء سيقوم بحذف كافة (المدارس، الموجهين، جداول العمل، الزيارات، التقارير) نهائياً.
+                <br />
+                <strong style={{ color: "#c62828" }}>حسابات مديري النظام (الأدمن) لن تتأثر بهذا الحذف.</strong>
+              </p>
+              <button
+                onClick={handleReset}
+                disabled={loading}
+                style={{ 
+                  background: "#c62828", 
+                  color: "white", 
+                  padding: "0.8rem 2rem", 
+                  border: "none", 
+                  borderRadius: "8px", 
+                  fontWeight: "bold", 
+                  cursor: "pointer",
+                  opacity: loading ? 0.5 : 1
+                }}
+              >
+                {loading ? "جاري الحذف..." : "تنفيذ إعادة ضبط المصنع الآن"}
+              </button>
             </div>
           </div>
-          <button
-            onClick={handleReset}
-            disabled={loading}
-            className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-bold transition-colors disabled:opacity-50"
-          >
-            {loading ? "جاري حذف البيانات..." : "تنفيذ إعادة ضبط المصنع"}
-          </button>
         </div>
+
       </div>
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }
