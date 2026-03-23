@@ -1,11 +1,12 @@
 import { prisma } from "@/lib/prisma";
-import { addSupervisorAction, editSupervisorAction, deleteSupervisorAction } from "./actions";
+import { addSupervisorAction, editSupervisorAction } from "./actions";
 import { sendAllCredentialsAction } from "@/app/login/actions";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { importSupervisorsCSVAction } from "../admin/import-actions";
 import ExcelExportButton from "@/app/components/ExcelExportButton";
+import DeleteSupervisorButton from "@/app/components/DeleteSupervisorButton";
 
 export const dynamic = "force-dynamic";
 
@@ -219,10 +220,7 @@ export default async function SupervisorsPage({ searchParams }: { searchParams: 
                             title="إرسال بيانات الدخول"
                           >📲</a>
                           <Link href={`/supervisors?editId=${sup.id}`} style={{ color: "var(--primary-deep-blue)", textDecoration: "none", fontSize: "0.9rem" }}>تعديل</Link>
-                          <form action={deleteSupervisorAction}>
-                            <input type="hidden" name="supervisorId" value={sup.id} />
-                            <button type="submit" style={{ background: "none", border: "none", color: "var(--danger)", cursor: "pointer", fontSize: "0.9rem", padding: 0, fontFamily: "inherit" }}>حذف</button>
-                          </form>
+                          <DeleteSupervisorButton supervisorId={sup.id} />
                         </div>
                       </td>
                     </tr>
