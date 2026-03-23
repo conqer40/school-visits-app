@@ -39,7 +39,9 @@ export async function addSupervisorAction(formData: FormData) {
   revalidatePath("/");
 }
 
-export async function editSupervisorAction(id: number, formData: FormData) {
+export async function editSupervisorAction(formData: FormData) {
+  const idRaw = formData.get("supervisorId") as string;
+  const id = parseInt(idRaw);
   const name = formData.get("name") as string;
   const phone = formData.get("phone") as string;
   const region = formData.get("region") as string;
@@ -69,7 +71,10 @@ export async function editSupervisorAction(id: number, formData: FormData) {
   revalidatePath("/supervisors");
 }
 
-export async function deleteSupervisorAction(id: number) {
+export async function deleteSupervisorAction(formData: FormData) {
+  const idRaw = formData.get("supervisorId") as string;
+  const id = parseInt(idRaw);
+  
   // 1. Delete associated reports
   await (prisma as any).visitReport.deleteMany({ where: { supervisorId: id } });
   // 2. Delete associated visits

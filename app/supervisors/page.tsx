@@ -70,7 +70,8 @@ export default async function SupervisorsPage({ searchParams }: { searchParams: 
           <h2 style={{ fontSize: "1.2rem", color: "var(--primary-deep-blue)", marginBottom: "1.5rem" }}>
             {supervisorToEdit ? "📝 تعديل بيانات موجه" : "👤 إضافة موجه جديد"}
           </h2>
-          <form action={supervisorToEdit ? editSupervisorAction.bind(null, supervisorToEdit.id) : addSupervisorAction} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <form action={supervisorToEdit ? editSupervisorAction : addSupervisorAction} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            {supervisorToEdit && <input type="hidden" name="supervisorId" value={supervisorToEdit.id} />}
             <div>
               <label style={{ display: "block", marginBottom: "0.4rem", fontSize: "0.9rem", fontWeight: "bold" }}>الاسم الكامل:</label>
               <input
@@ -218,7 +219,8 @@ export default async function SupervisorsPage({ searchParams }: { searchParams: 
                             title="إرسال بيانات الدخول"
                           >📲</a>
                           <Link href={`/supervisors?editId=${sup.id}`} style={{ color: "var(--primary-deep-blue)", textDecoration: "none", fontSize: "0.9rem" }}>تعديل</Link>
-                          <form action={deleteSupervisorAction.bind(null, sup.id)}>
+                          <form action={deleteSupervisorAction}>
+                            <input type="hidden" name="supervisorId" value={sup.id} />
                             <button type="submit" style={{ background: "none", border: "none", color: "var(--danger)", cursor: "pointer", fontSize: "0.9rem", padding: 0, fontFamily: "inherit" }}>حذف</button>
                           </form>
                         </div>
