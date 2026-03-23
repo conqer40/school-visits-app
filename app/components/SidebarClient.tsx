@@ -75,6 +75,7 @@ export default function SidebarClient({ user, isAdmin }: SidebarClientProps) {
                 <li><Link href="/whatsapp" onClick={closeSidebar} className="nav-link-item">💬 الواتساب</Link></li>
                 <li><Link href="/reports" onClick={closeSidebar} className="nav-link-item">📊 سجل النشاط</Link></li>
                 <li><Link href="/admins" onClick={closeSidebar} className="nav-link-item">🛡️ إدارة الإداريين</Link></li>
+                <li><Link href="/admins/backup" onClick={closeSidebar} className="nav-link-item">💾 النسخ الاحتياطي والضبط</Link></li>
                 <li>
                   <Link href="/reports/advanced" onClick={closeSidebar} className="nav-link-item" style={{ color: "var(--accent-gold)", border: "1px solid rgba(245,176,65,0.3)", marginTop: "0.5rem" }}>
                     📋 خطط وتقارير الطباعة
