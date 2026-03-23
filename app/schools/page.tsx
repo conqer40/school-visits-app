@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { deleteSchoolAction } from "./actions";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -8,6 +7,23 @@ import { importSchoolsCSVAction } from "../admin/import-actions";
 import ExcelExportButton from "@/app/components/ExcelExportButton";
 
 export const dynamic = "force-dynamic";
+
+export async function deleteSchoolAction(formData: FormData) {
+  const idRaw = formData.get("schoolId") as string;
+  const id = parseInt(idRaw);
+  
+  // 1. Delete associated visit reports first
+  await (prisma as any).visitReport.deleteMany({
+    where: { visit: { schoolId: id } }
+  });
+  // 2. Delete associated visits
+  await (prisma as any).visit.deleteMany({ where: { schoolId: id } });
+  // 3. Delete school
+  await (prisma as any).school.delete({ where: { id } });
+  
+  revalidatePath("/schools");
+  revalidatePath("/");
+}
 
 const CSV_BOM = "\uFEFF";
 
@@ -47,7 +63,9 @@ export async function addSchoolAction(formData: FormData) {
   revalidatePath("/");
 }
 
-export async function editSchoolAction(id: number, formData: FormData) {
+export async function editSchoolAction(formData: FormData) {
+  const idRaw = formData.get("schoolId") as string;
+  const id = parseInt(idRaw);
   const name = formData.get("name") as string;
   const admin = formData.get("admin") as string;
   const shift = formData.get("shift") as string || "صباحي";
@@ -120,7 +138,8 @@ export default async function SchoolsPage({ searchParams }: { searchParams: Prom
           <h2 style={{ fontSize: "1.2rem", color: "var(--primary-deep-blue)", marginBottom: "1.5rem" }}>
             {schoolToEdit ? "📝 تعديل بيانات مدرسة" : "➕ إضافة مدرسة جديدة"}
           </h2>
-          <form action={schoolToEdit ? editSchoolAction.bind(null, schoolToEdit.id) : addSchoolAction} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <form action={schoolToEdit ? editSchoolAction : addSchoolAction} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            {schoolToEdit && <input type="hidden" name="schoolId" value={schoolToEdit.id} />}
             <div>
               <label style={{ display: "block", marginBottom: "0.4rem", fontSize: "0.9rem", fontWeight: "bold" }}>اسم المدرسة:</label>
               <input
@@ -328,7 +347,8 @@ export default async function SchoolsPage({ searchParams }: { searchParams: Prom
                         }}>
                           تعديل
                         </Link>
-                        <form action={deleteSchoolAction.bind(null, school.id)}>
+                        <form action={deleteSchoolAction}>
+                          <input type="hidden" name="schoolId" value={school.id} />
                           <button type="submit" style={{ 
                             background: "rgba(239, 68, 68, 0.1)", 
                             border: "1px solid rgba(239, 68, 68, 0.2)", 
