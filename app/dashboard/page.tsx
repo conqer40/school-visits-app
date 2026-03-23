@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession, egyptDate, egyptTime } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import ChartsSection from "@/app/components/ChartsSection";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,10 @@ export default async function DashboardPage() {
   
   const completedVisits = await prisma.visit.count({
     where: { status: "COMPLETED" }
+  });
+
+  const excusedVisits = await prisma.visit.count({
+    where: { status: "EXCUSED" }
   });
 
   const coveragePercent = totalSchools > 0 ? Math.round((completedVisits / totalSchools) * 100) : 0;
@@ -40,33 +45,49 @@ export default async function DashboardPage() {
           <p style={{ color: "#888", fontSize: "0.9rem" }}>
             التاريخ الحالي: {egyptDate(new Date())} | الساعة: {egyptTime(new Date())}
           </p>
-          <div style={{ background: "var(--surface)", padding: "0.5rem 1rem", borderRadius: "8px", border: "1px solid var(--border)", fontSize: "0.9rem", fontWeight: "bold", color: "var(--primary-deep-blue)" }}>
-             🕒 {new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-          </div>
         </div>
       </header>
 
-      <div className="grid-responsive" style={{ marginBottom: "3rem" }}>
-        <div className="card">
-          <h3 style={{ fontSize: "1rem", color: "#666" }}>إجمالي المدارس</h3>
-          <p style={{ fontSize: "2.5rem", fontWeight: "bold", color: "var(--primary-deep-blue)" }}>{totalSchools}</p>
+      {/* Stats Grid */}
+      <div className="grid-responsive" style={{ marginBottom: "2rem" }}>
+        <div className="card" style={{ borderTop: "4px solid var(--primary-deep-blue)", textAlign: "center" }}>
+          <p style={{ fontSize: "0.85rem", color: "#666", margin: 0 }}>إجمالي المدارس</p>
+          <p style={{ fontSize: "2.8rem", fontWeight: "bold", color: "var(--primary-deep-blue)", margin: "0.3rem 0" }}>{totalSchools}</p>
+          <p style={{ fontSize: "0.75rem", color: "#999", margin: 0 }}>🏫 مدرسة مسجلة</p>
         </div>
-        <div className="card">
-          <h3 style={{ fontSize: "1rem", color: "#666" }}>إجمالي الموجهين</h3>
-          <p style={{ fontSize: "2.5rem", fontWeight: "bold", color: "var(--secondary-dark-navy)" }}>{totalSupervisors}</p>
+        <div className="card" style={{ borderTop: "4px solid var(--secondary-dark-navy)", textAlign: "center" }}>
+          <p style={{ fontSize: "0.85rem", color: "#666", margin: 0 }}>إجمالي الموجهين</p>
+          <p style={{ fontSize: "2.8rem", fontWeight: "bold", color: "var(--secondary-dark-navy)", margin: "0.3rem 0" }}>{totalSupervisors}</p>
+          <p style={{ fontSize: "0.75rem", color: "#999", margin: 0 }}>👤 موجه نشط</p>
         </div>
-        <div className="card">
-          <h3 style={{ fontSize: "1rem", color: "#666" }}>الزيارات المعلقة</h3>
-          <p style={{ fontSize: "2.5rem", fontWeight: "bold", color: "var(--accent-gold)" }}>{activeVisits}</p>
+        <div className="card" style={{ borderTop: "4px solid #22c55e", textAlign: "center" }}>
+          <p style={{ fontSize: "0.85rem", color: "#666", margin: 0 }}>زيارات منجزة</p>
+          <p style={{ fontSize: "2.8rem", fontWeight: "bold", color: "#22c55e", margin: "0.3rem 0" }}>{completedVisits}</p>
+          <p style={{ fontSize: "0.75rem", color: "#999", margin: 0 }}>✅ تمت بنجاح</p>
         </div>
-        <div className="card">
-          <h3 style={{ fontSize: "1rem", color: "#666" }}>نسبة التغطية</h3>
-          <p style={{ fontSize: "2.5rem", fontWeight: "bold", color: "var(--success)" }}>{coveragePercent}%</p>
+        <div className="card" style={{ borderTop: "4px solid var(--accent-gold)", textAlign: "center" }}>
+          <p style={{ fontSize: "0.85rem", color: "#666", margin: 0 }}>زيارات معلقة</p>
+          <p style={{ fontSize: "2.8rem", fontWeight: "bold", color: "var(--accent-gold)", margin: "0.3rem 0" }}>{activeVisits}</p>
+          <p style={{ fontSize: "0.75rem", color: "#999", margin: 0 }}>⏳ في الانتظار</p>
+        </div>
+        <div className="card" style={{ borderTop: "4px solid var(--success)", textAlign: "center" }}>
+          <p style={{ fontSize: "0.85rem", color: "#666", margin: 0 }}>نسبة التغطية</p>
+          <p style={{ fontSize: "2.8rem", fontWeight: "bold", color: "var(--success)", margin: "0.3rem 0" }}>{coveragePercent}%</p>
+          <p style={{ fontSize: "0.75rem", color: "#999", margin: 0 }}>📊 من المدارس</p>
+        </div>
+        <div className="card" style={{ borderTop: "4px solid #6366f1", textAlign: "center" }}>
+          <p style={{ fontSize: "0.85rem", color: "#666", margin: 0 }}>اعتذارات</p>
+          <p style={{ fontSize: "2.8rem", fontWeight: "bold", color: "#6366f1", margin: "0.3rem 0" }}>{excusedVisits}</p>
+          <p style={{ fontSize: "0.75rem", color: "#999", margin: 0 }}>🔵 مع عذر</p>
         </div>
       </div>
 
-      <div className="grid-responsive" style={{ alignItems: "stretch" }}>
-        <section className="card">
+      {/* Charts Section */}
+      <ChartsSection />
+
+      {/* Recent Reports */}
+      <div style={{ marginTop: "2rem" }}>
+        <div className="card">
           <h2 style={{ fontSize: "1.2rem", marginBottom: "1.5rem" }}>📝 آخر التقارير المرفوعة</h2>
           {recentReports.length === 0 ? (
             <p style={{ color: "#999", textAlign: "center", padding: "2rem" }}>لا توجد تقارير جديدة حالياً.</p>
@@ -74,7 +95,7 @@ export default async function DashboardPage() {
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               {recentReports.map((report: any) => (
                 <div key={report.id} style={{ padding: "1rem", borderBottom: "1px solid var(--border-light)" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "0.5rem" }}>
                     <strong>{report.supervisor.name}</strong>
                     <span style={{ fontSize: "0.8rem", color: "#999" }}>{egyptTime(report.createdAt)}</span>
                   </div>
@@ -86,21 +107,7 @@ export default async function DashboardPage() {
               ))}
             </div>
           )}
-        </section>
-
-        <section className="card" style={{ background: "var(--primary-deep-blue)", color: "white" }}>
-          <h2 style={{ fontSize: "1.2rem", color: "var(--accent-gold)", marginBottom: "1rem" }}>💡 ملاحظات النسخة</h2>
-          <ul style={{ paddingRight: "1.2rem", fontSize: "0.9rem", lineHeight: "1.6" }}>
-            <li>تم تفعيل نظام تسجيل الدخول الموحد.</li>
-            <li>إضافة خاصية تعديل المدارس والموجهين.</li>
-            <li>تفعيل مركز التقارير اليومية للموجهين.</li>
-            <li>تحسين خوارزمية التوزيع العادل للمدارس.</li>
-          </ul>
-          <div style={{ marginTop: "2rem", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "1rem", fontSize: "0.8rem", opacity: 0.8 }}>
-            تنفيذ وإشراف: أ. محمد العسيلى<br/>
-            وكيل إدارة غرب الزقازيق التعليمية
-          </div>
-        </section>
+        </div>
       </div>
     </div>
   );

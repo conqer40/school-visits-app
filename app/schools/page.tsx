@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { importSchoolsCSVAction } from "../admin/import-actions";
+import ExcelExportButton from "@/app/components/ExcelExportButton";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,7 @@ export default async function SchoolsPage({ searchParams }: { searchParams: Prom
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", flexWrap: "wrap", gap: "1rem" }}>
         <h1 style={{ color: "var(--primary-deep-blue)", margin: 0 }}>🏫 إدارة المدارس</h1>
         <div style={{ display: "flex", gap: "1rem", alignItems: "center", flexWrap: "wrap" }}>
+          <ExcelExportButton type="schools" label="تصدير Excel" />
           <a
             href={`data:text/csv;charset=utf-8,${encodeURIComponent(csvContent)}`}
             download="schools_template.csv"

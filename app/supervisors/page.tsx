@@ -5,6 +5,7 @@ import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { importSupervisorsCSVAction } from "../admin/import-actions";
+import ExcelExportButton from "@/app/components/ExcelExportButton";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,7 @@ export default async function SupervisorsPage({ searchParams }: { searchParams: 
         <h1 style={{ color: "var(--primary-deep-blue)", margin: 0 }}>👥 إدارة الموجهين</h1>
 
         <div style={{ display: "flex", gap: "1rem", alignItems: "center", flexWrap: "wrap" }}>
+          <ExcelExportButton type="supervisors" label="تصدير Excel" />
           <Link href="/specializations" style={{ fontSize: "0.85rem", padding: "0.4rem 0.8rem", border: "1px solid var(--primary-deep-blue)", borderRadius: "8px", textDecoration: "none", color: "var(--primary-deep-blue)" }}>
             📚 إدارة التخصصات
           </Link>

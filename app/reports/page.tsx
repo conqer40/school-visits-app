@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession, egyptDateTime } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import ExcelExportButton from "@/app/components/ExcelExportButton";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +30,10 @@ export default async function ReportsPage() {
 
   return (
     <div dir="rtl">
-      <h1 style={{ color: "var(--primary-deep-blue)", marginBottom: "2rem" }}>📊 التقارير والنشاط</h1>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", flexWrap: "wrap", gap: "1rem" }}>
+        <h1 style={{ color: "var(--primary-deep-blue)", margin: 0 }}>📊 التقارير والنشاط</h1>
+        <ExcelExportButton type="reports" label="تصدير Excel" />
+      </div>
 
       <div className="grid-responsive" style={{ marginBottom: "2.5rem" }}>
         <div className="card" style={{ borderRight: "4px solid var(--primary-deep-blue)" }}>
