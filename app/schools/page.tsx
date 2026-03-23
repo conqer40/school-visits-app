@@ -328,7 +328,7 @@ export default async function SchoolsPage({ searchParams }: { searchParams: Prom
                         }}>
                           تعديل
                         </Link>
-                        <form action={deleteSchoolAction.bind(null, school.id)} onSubmit={(e) => !confirm("هل أنت متأكد من حذف هذه المدرسة؟") && e.preventDefault()}>
+                        <form action={deleteSchoolAction.bind(null, school.id)}>
                           <button type="submit" style={{ 
                             background: "rgba(239, 68, 68, 0.1)", 
                             border: "1px solid rgba(239, 68, 68, 0.2)", 
