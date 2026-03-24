@@ -55,7 +55,7 @@ export default async function SupervisorsPage({ searchParams }: { searchParams: 
             <input type="file" name="file" accept=".csv" required style={{ fontSize: "0.8rem" }} />
             <button type="submit" className="btn-primary" style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem" }}>استيراد CSV</button>
           </form>
-          <form action={sendAllCredentialsAction}>
+          <form action={async (formData: FormData) => { "use server"; await sendAllCredentialsAction(); }}>
             <button type="submit" className="btn-primary" style={{ background: "var(--success)", border: "none", fontSize: "0.85rem" }}>
               📲 إرسال الحسابات للجميع
             </button>
