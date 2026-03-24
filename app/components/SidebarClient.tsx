@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { logoutAction } from "@/app/login/actions";
 import Clock from "./Clock";
 
@@ -12,23 +13,47 @@ interface SidebarClientProps {
 
 export default function SidebarClient({ user, isAdmin }: SidebarClientProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
 
   const toggleSidebar = () => setIsOpen(!isOpen);
   const closeSidebar = () => setIsOpen(false);
+
+  // Close sidebar on route change on mobile
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
+
+  const navLinks = isAdmin ? [
+    { href: "/dashboard", icon: "🏠", label: "لوحة التحكم" },
+    { href: "/schools", icon: "🏫", label: "المدارس" },
+    { href: "/supervisors", icon: "👥", label: "الموجهين" },
+    { href: "/specializations", icon: "📚", label: "التخصصات" },
+    { href: "/schedule", icon: "📅", label: "الجدول الشهري" },
+    { href: "/community", icon: "🤝", label: "مجتمع الموجهين" },
+    { href: "/whatsapp", icon: "💬", label: "الواتساب" },
+    { href: "/reports", icon: "📊", label: "سجل النشاط" },
+    { href: "/admins", icon: "🛡️", label: "إدارة الإداريين" },
+    { href: "/admins/backup", icon: "💾", label: "النظام والضبط" },
+  ] : [
+    { href: "/my-schedule", icon: "📅", label: "جدولي اليومي" },
+    { href: "/my-reports", icon: "📝", label: "تقاريري السابقة" },
+    { href: "/community", icon: "🤝", label: "مجتمع الموجهين" },
+    { href: "/my-schedule/settings", icon: "⚙️", label: "إعدادات الحساب" },
+  ];
 
   return (
     <>
       {/* Mobile Header */}
       <header className="mobile-header no-print">
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div style={{ width: "35px", height: "35px", background: "var(--accent-gold)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", color: "var(--primary-deep-blue)" }}>
+          <div style={{ width: "35px", height: "35px", background: "linear-gradient(135deg, var(--accent-gold), #fcd34d)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "800", color: "var(--primary-deep-blue)", boxShadow: "0 2px 5px rgba(245, 158, 11, 0.3)" }}>
             W
           </div>
-          <span style={{ fontWeight: "bold", fontSize: "0.9rem" }}>نظام الزيارات</span>
+          <span style={{ fontWeight: "800", fontSize: "1rem", letterSpacing: "0.5px" }}>نظام الزيارات</span>
         </div>
         <button 
           onClick={toggleSidebar}
-          style={{ background: "none", border: "none", color: "white", fontSize: "1.5rem", cursor: "pointer" }}
+          style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: "8px", width: "40px", height: "40px", color: "white", fontSize: "1.2rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}
         >
           {isOpen ? "✕" : "☰"}
         </button>
@@ -41,99 +66,99 @@ export default function SidebarClient({ user, isAdmin }: SidebarClientProps) {
       ></div>
 
       {/* Sidebar */}
-      <aside className={`sidebar no-print ${isOpen ? "open" : ""}`} style={{ width: "280px" }}>
-        <div style={{ padding: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "0.5rem" }}>
-             <div style={{ width: "40px", height: "40px", background: "var(--accent-gold)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", fontWeight: "bold", color: "var(--primary-deep-blue)" }}>
+      <aside className={`sidebar no-print ${isOpen ? "open" : ""}`} style={{ width: "var(--sidebar-width)", display: "flex", flexDirection: "column" }}>
+        {/* Brand & Clock */}
+        <div style={{ padding: "1.8rem 1.5rem", borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(0,0,0,0.1)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "1rem" }}>
+             <div style={{ width: "45px", height: "45px", background: "linear-gradient(135deg, var(--accent-gold), #f97316)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem", fontWeight: "800", color: "var(--primary-deep-blue)", boxShadow: "0 4px 10px rgba(245, 158, 11, 0.4)" }}>
               W
             </div>
             <div>
-              <h2 style={{ fontSize: "1.1rem", margin: 0, color: "var(--accent-gold)" }}>نظام الزيارات</h2>
-              <p style={{ fontSize: "0.7rem", margin: 0, opacity: 0.8 }}>إدارة غرب الزقازيق التعليمية</p>
+              <h2 style={{ fontSize: "1.2rem", margin: 0, color: "white", fontWeight: "800", letterSpacing: "0.5px" }}>نظام الزيارات</h2>
+              <p style={{ fontSize: "0.75rem", margin: 0, color: "var(--accent-cyan)", fontWeight: "600" }}>إدارة غرب الزقازيق التعليمية</p>
             </div>
           </div>
-          <Clock />
+          <div style={{ background: "rgba(255,255,255,0.05)", padding: "0.8rem", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.1)" }}>
+             <Clock />
+          </div>
         </div>
 
-        <div style={{ padding: "1rem", background: "rgba(0,0,0,0.2)", margin: "1rem", borderRadius: "12px" }}>
-          <p style={{ fontSize: "0.8rem", margin: 0, opacity: 0.7 }}>مرحباً بك،</p>
-          <p style={{ fontSize: "0.95rem", fontWeight: "bold", margin: "0.2rem 0 0" }}>
+        {/* User Card */}
+        <div style={{ padding: "1.2rem", background: "linear-gradient(135deg, rgba(37,99,235,0.1), rgba(0,0,0,0.2))", margin: "1.2rem 1.2rem 0.5rem", borderRadius: "16px", border: "1px solid rgba(37,99,235,0.2)", position: "relative", overflow: "hidden" }}>
+          <div style={{ position: "absolute", top: "-10px", right: "-10px", width: "40px", height: "40px", background: "var(--accent-primary)", borderRadius: "50%", opacity: "0.2", filter: "blur(10px)" }}></div>
+          <p style={{ fontSize: "0.8rem", margin: 0, color: "rgba(255,255,255,0.6)", fontWeight: "600" }}>مرحباً بك،</p>
+          <p style={{ fontSize: "1rem", fontWeight: "800", margin: "0.3rem 0 0", color: "white" }}>
             {isAdmin ? "مدير النظام 👑" : `أ/ ${user?.supervisor?.name || user?.username}`}
           </p>
-          {isAdmin && <p style={{ fontSize: "0.7rem", color: "var(--accent-gold)", marginTop: "0.2rem" }}>أ. محمد العسيلى</p>}
+          {isAdmin && <p style={{ fontSize: "0.75rem", color: "var(--accent-gold)", marginTop: "0.4rem", fontWeight: "700" }}>المشرف العام</p>}
         </div>
 
-        <nav style={{ flex: 1, padding: "1rem", overflowY: "auto" }}>
-          <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-            {isAdmin ? (
-              <>
-                <li><Link href="/dashboard" onClick={closeSidebar} className="nav-link-item">🏠 لوحة التحكم</Link></li>
-                <li><Link href="/schools" onClick={closeSidebar} className="nav-link-item">🏫 المدارس</Link></li>
-                <li><Link href="/supervisors" onClick={closeSidebar} className="nav-link-item">👥 الموجهين</Link></li>
-                <li><Link href="/specializations" onClick={closeSidebar} className="nav-link-item">📚 التخصصات</Link></li>
-                <li><Link href="/schedule" onClick={closeSidebar} className="nav-link-item">📅 الجدول الشهري</Link></li>
-                <li><Link href="/whatsapp" onClick={closeSidebar} className="nav-link-item">💬 الواتساب</Link></li>
-                <li><Link href="/reports" onClick={closeSidebar} className="nav-link-item">📊 سجل النشاط</Link></li>
-                <li><Link href="/admins" onClick={closeSidebar} className="nav-link-item">🛡️ إدارة الإداريين</Link></li>
-                <li><Link href="/admins/backup" onClick={closeSidebar} className="nav-link-item">💾 النسخ الاحتياطي والضبط</Link></li>
-                <li>
-                  <Link href="/reports/advanced" onClick={closeSidebar} className="nav-link-item" style={{ color: "var(--accent-gold)", border: "1px solid rgba(245,176,65,0.3)", marginTop: "0.5rem" }}>
-                    📋 خطط وتقارير الطباعة
-                  </Link>
-                </li>
-              </>
-            ) : (
-              <>
-                <li><Link href="/my-schedule" onClick={closeSidebar} className="nav-link-item">📅 جدولي اليومي</Link></li>
-                <li><Link href="/my-reports" onClick={closeSidebar} className="nav-link-item">📝 تقاريري السابقة</Link></li>
-                <li><Link href="/my-schedule/settings" onClick={closeSidebar} className="nav-link-item">⚙️ إعدادات الحساب</Link></li>
-              </>
+        {/* Navigation Links */}
+        <nav style={{ flex: 1, padding: "1rem 0", overflowY: "auto", overflowX: "hidden" }}>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+            {navLinks.map((link) => (
+              <li key={link.href}>
+                <Link 
+                  href={link.href}
+                  className={`nav-link ${pathname === link.href ? "active" : ""}`}
+                >
+                  <span style={{ fontSize: "1.2rem", width: "30px", textAlign: "center" }}>{link.icon}</span>
+                  <span>{link.label}</span>
+                </Link>
+              </li>
+            ))}
+            {isAdmin && (
+               <li style={{ marginTop: "1rem", padding: "0 1rem" }}>
+                 <Link 
+                    href="/reports/advanced" 
+                    className={`nav-link ${pathname === "/reports/advanced" ? "active" : ""}`}
+                    style={{ background: "linear-gradient(135deg, rgba(245,158,11,0.15), rgba(0,0,0,0.2))", border: "1px solid rgba(245,158,11,0.3)", color: "var(--accent-gold)", margin: "0" }}
+                  >
+                    <span style={{ fontSize: "1.2rem", width: "30px", textAlign: "center" }}>📋</span>
+                    <span>خطط وتقارير الطباعة</span>
+                 </Link>
+               </li>
             )}
           </ul>
         </nav>
 
-        <div style={{ padding: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+        {/* Footer & Logout */}
+        <div style={{ padding: "1.5rem", background: "rgba(0,0,0,0.2)", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
           <form action={logoutAction}>
             <button type="submit" className="logout-btn">
-              🚪 تسجيل الخروج
+              <span style={{ fontSize: "1.1rem" }}>🚪</span> تسجيل الخروج
             </button>
           </form>
-          <p style={{ textAlign: "center", fontSize: "0.6rem", color: "rgba(255,255,255,0.3)", marginTop: "0.8rem" }}>
-            تنفيذ وإشراف: أ. محمد العسيلى
+          <p style={{ textAlign: "center", fontSize: "0.65rem", color: "rgba(255,255,255,0.3)", marginTop: "1.2rem", letterSpacing: "0.5px" }}>
+            تطوير وإشراف: أ. محمد العسيلى
           </p>
         </div>
       </aside>
 
       <style jsx>{`
-        .nav-link-item {
-          text-decoration: none;
-          color: rgba(255,255,255,0.8);
-          padding: 0.8rem 1rem;
-          display: block;
-          border-radius: 10px;
-          transition: all 0.2s;
-          font-size: 0.95rem;
-        }
-        .nav-link-item:hover {
-          background: rgba(255,255,255,0.1);
-          color: white;
-          padding-right: 1.2rem;
-        }
         .logout-btn {
           width: 100%;
           padding: 0.8rem;
           background: rgba(239, 68, 68, 0.1);
-          color: #ff9999;
+          color: #fca5a5;
           border: 1px solid rgba(239, 68, 68, 0.2);
-          border-radius: 10px;
+          border-radius: 12px;
           cursor: pointer;
           font-family: inherit;
-          font-weight: bold;
-          transition: all 0.2s;
+          font-weight: 700;
+          font-size: 0.95rem;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
         }
         .logout-btn:hover {
           background: var(--danger);
           color: white;
+          border-color: var(--danger);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
       `}</style>
     </>
