@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { deleteSupervisorAction } from "../app/supervisors/actions_server";
+import { deleteSupervisorAction } from "@/app/supervisors/actions";
 
 export default function DeleteSupervisorButton({ supervisorId }: { supervisorId: number }) {
   const [isPending, startTransition] = useTransition();

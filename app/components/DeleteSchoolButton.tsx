@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { deleteSchoolAction } from "../app/schools/actions_server";
+import { deleteSchoolAction } from "@/app/schools/actions";
 
 export default function DeleteSchoolButton({ schoolId }: { schoolId: number }) {
   const [isPending, startTransition] = useTransition();
