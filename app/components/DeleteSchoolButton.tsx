@@ -10,10 +10,8 @@ export default function DeleteSchoolButton({ schoolId }: { schoolId: number }) {
     <button
       onClick={() => {
         if (confirm("هل أنت متأكد من حذف هذه المدرسة؟")) {
-          const formData = new FormData();
-          formData.append("schoolId", schoolId.toString());
           startTransition(async () => {
-            await deleteSchoolAction(formData);
+            await deleteSchoolAction(schoolId);
           });
         }
       }}
