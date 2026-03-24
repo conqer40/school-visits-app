@@ -68,7 +68,9 @@ export async function editSchoolAction(formData: FormData) {
   revalidatePath("/schools");
 }
 
-export async function deleteSchoolAction(id: number) {
+export async function deleteSchoolAction(formData: FormData) {
+  const idRaw = formData.get("schoolId") as string;
+  const id = parseInt(idRaw);
   // 1. Delete associated visit reports first
   await (prisma as any).visitReport.deleteMany({
     where: { visit: { schoolId: id } }
