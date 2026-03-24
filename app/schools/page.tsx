@@ -10,9 +10,12 @@ export default async function SchoolsPage({ searchParams }: { searchParams: Prom
   const user = await getSession();
   if (!user || user.role !== "ADMIN") redirect("/login");
 
-  const schools = await (prisma as any).school.findMany({
+  const rawSchools = await (prisma as any).school.findMany({
     orderBy: { name: "asc" },
   });
+  
+  // CRITICAL FIX: Strip Date objects and other Prisma artifacts to prevent Vercel 500 error
+  const schools = JSON.parse(JSON.stringify(rawSchools));
 
   const editId = editIdRaw ? parseInt(editIdRaw) : null;
 

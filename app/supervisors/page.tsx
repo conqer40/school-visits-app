@@ -12,13 +12,17 @@ export default async function SupervisorsPage({ searchParams }: { searchParams: 
 
   const p = prisma as any;
 
-  const [supervisors, specializations] = await Promise.all([
+  const [rawSupervisors, rawSpecializations] = await Promise.all([
     p.supervisor.findMany({
       orderBy: { name: "asc" },
       include: { user: true, spec: true },
     }),
     p.specialization.findMany({ orderBy: { name: "asc" } }),
   ]);
+
+  // CRITICAL FIX: Strip Date objects and other Prisma artifacts to prevent Vercel 500 error
+  const supervisors = JSON.parse(JSON.stringify(rawSupervisors));
+  const specializations = JSON.parse(JSON.stringify(rawSpecializations));
 
   const editId = editIdRaw ? parseInt(editIdRaw) : null;
 
