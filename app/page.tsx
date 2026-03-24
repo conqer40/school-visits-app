@@ -5,10 +5,12 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 export default async function LandingPage() {
-  const [supervisorsCount, schoolsCount, visitsCount] = await Promise.all([
-    (prisma as any).supervisor.count({ where: { isActive: true } }),
-    (prisma as any).school.count({ where: { status: "ACTIVE" } }),
-    (prisma as any).visit.count(),
+  const p = prisma as any;
+  const [supervisorsCount, schoolsCount, visitsCount, settings] = await Promise.all([
+    p.supervisor.count({ where: { isActive: true } }),
+    p.school.count({ where: { status: "ACTIVE" } }),
+    p.visit.count(),
+    p.systemSetting.findUnique({ where: { id: 1 } })
   ]);
 
   return (
@@ -45,7 +47,7 @@ export default async function LandingPage() {
             W
           </div>
           <div>
-            <h1 style={{ margin: 0, fontSize: "1.2rem", color: "var(--primary-deep-blue)", fontWeight: "900", letterSpacing: "0.5px" }}>إدارة غرب الزقازيق</h1>
+            <h1 style={{ margin: 0, fontSize: "1.2rem", color: "var(--primary-deep-blue)", fontWeight: "900", letterSpacing: "0.5px" }}>{settings?.siteName || "إدارة غرب الزقازيق"}</h1>
             <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--accent-primary)", fontWeight: "600" }}>نظام الزيارات المدرسية الذكي</p>
           </div>
         </div>
@@ -138,10 +140,10 @@ export default async function LandingPage() {
             W
           </div>
           <p style={{ margin: "0 0 1rem", fontSize: "1.1rem", fontWeight: "700" }}>
-            إدارة غرب الزقازيق التعليمية — وزارة التربية والتعليم
+            {settings?.siteName || "إدارة غرب الزقازيق التعليمية"} — وزارة التربية والتعليم
           </p>
           <p style={{ margin: "0 0 1.5rem", fontSize: "0.9rem", color: "rgba(255,255,255,0.6)", lineHeight: "1.6" }}>
-            تنفيذ وإشراف: الأستاذ محمد العسيلى - وكيل الإدارة<br/>
+            تنفيذ وإشراف: الأستاذ {settings?.managerName || "محمد العسيلى"} - وكيل الإدارة<br/>
             نظام متكامل لضمان التميز الإداري والعدالة في التوزيع، ولتوفير أداة قوية لمتابعة العملية التعليمية.
           </p>
           <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", margin: "2rem auto 1.5rem", width: "50%" }}></div>

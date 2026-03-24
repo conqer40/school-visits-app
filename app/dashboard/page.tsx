@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession, egyptDate, egyptTime } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import ChartsSection from "@/app/components/ChartsSection";
 
 export const dynamic = "force-dynamic";
@@ -80,6 +81,49 @@ export default async function DashboardPage() {
           <p style={{ fontSize: "2.8rem", fontWeight: "bold", color: "#6366f1", margin: "0.3rem 0" }}>{excusedVisits}</p>
           <p style={{ fontSize: "0.75rem", color: "#999", margin: 0 }}>🔵 مع عذر</p>
         </div>
+      </div>
+
+      {/* Quick Access Area */}
+      <div style={{ marginBottom: "2rem", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem" }}>
+         <Link href="/chat" style={{ textDecoration: "none" }}>
+            <div className="card-hover-effect" style={{ 
+              background: "linear-gradient(135deg, #1e40af, #3b82f6)", 
+              color: "white", 
+              padding: "1.5rem", 
+              borderRadius: "16px", 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "1.2rem",
+              boxShadow: "0 10px 25px rgba(30, 64, 175, 0.25)",
+              transition: "transform 0.2s"
+            }}>
+               <div style={{ fontSize: "2.5rem", background: "rgba(255,255,255,0.2)", width: "60px", height: "60px", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center" }}>💬</div>
+               <div>
+                  <h3 style={{ margin: 0, fontSize: "1.2rem", fontWeight: "900" }}>غرفة الدردشة التخصصية</h3>
+                  <p style={{ margin: "4px 0 0", fontSize: "0.85rem", opacity: 0.9 }}>تواصل مباشر مع الموجهين ومراقبة النقاشات.</p>
+               </div>
+            </div>
+         </Link>
+
+         <Link href="/settings" style={{ textDecoration: "none" }}>
+            <div className="card-hover-effect" style={{ 
+              background: "linear-gradient(135deg, #0f172a, #334155)", 
+              color: "white", 
+              padding: "1.5rem", 
+              borderRadius: "16px", 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "1.2rem",
+              boxShadow: "0 10px 25px rgba(15, 23, 42, 0.25)",
+              transition: "transform 0.2s"
+            }}>
+               <div style={{ fontSize: "2.5rem", background: "rgba(255,255,255,0.2)", width: "60px", height: "60px", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center" }}>⚙️</div>
+               <div>
+                  <h3 style={{ margin: 0, fontSize: "1.2rem", fontWeight: "900" }}>إعدادات الهوية والنظام</h3>
+                  <p style={{ margin: "4px 0 0", fontSize: "0.85rem", opacity: 0.9 }}>تعديل المسميات الرسمية، الأسماء، وحقوق الملكية.</p>
+               </div>
+            </div>
+         </Link>
       </div>
 
       {/* Charts Section */}

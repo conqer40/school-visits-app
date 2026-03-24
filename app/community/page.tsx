@@ -66,8 +66,15 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
     }
   });
 
-  // VERY IMPORTANT: Serialize Prisma Data to avoid Vercel 500 ERROR (Date & BigInt issues)
-  const safePosts = JSON.parse(JSON.stringify(postsRaw));
+  // VERY IMPORTANT: Serialize Prisma Data and handle NULL authors for Admin posts
+  const safePosts = JSON.parse(JSON.stringify(postsRaw)).map((post: any) => ({
+    ...post,
+    author: post.author || { name: "مدير النظام", region: "البوابة الرسمية" },
+    comments: (post.comments || []).map((comment: any) => ({
+      ...comment,
+      author: comment.author || { name: "مدير النظام" }
+    }))
+  }));
 
   return (
     <div dir="rtl">

@@ -44,6 +44,7 @@ model Specialization {
   meetingDay      Int?     // 0=الأحد, 1=الاثنين, 2=الثلاثاء, 3=الأربعاء, 4=الخميس
   supervisors     Supervisor[]
   posts           Post[]
+  chatMessages    ChatMessage[]
   createdAt       DateTime @default(now())
 }
 
@@ -59,12 +60,14 @@ model Supervisor {
   region          String   @default("غرب الزقازيق")
   workloadScore   Int      @default(0)
   isActive        Boolean  @default(true)
+  isBannedFromChat Boolean @default(false)
   visits          Visit[]
   reports         VisitReport[]
   user            User?
   posts           Post[]    @relation("SupervisorPosts")
   comments        Comment[] @relation("SupervisorComments")
   likes           Like[]    @relation("SupervisorLikes")
+  chatMessages    ChatMessage[] @relation("SupervisorChatMessages")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
@@ -115,8 +118,8 @@ model Post {
   specializationId Int
   spec            Specialization @relation(fields: [specializationId], references: [id])
   level           String    // e.g., "ابتدائي", "إعدادي", "ثانوي عام", or "الكل"
-  authorId        Int
-  author          Supervisor @relation("SupervisorPosts", fields: [authorId], references: [id], onDelete: Cascade)
+  authorId        Int?
+  author          Supervisor? @relation("SupervisorPosts", fields: [authorId], references: [id], onDelete: Cascade)
   comments        Comment[]
   likes           Like[]
   createdAt       DateTime  @default(now())
@@ -128,8 +131,8 @@ model Comment {
   content   String
   postId    Int
   post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  authorId  Int
-  author    Supervisor @relation("SupervisorComments", fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  Int?
+  author    Supervisor? @relation("SupervisorComments", fields: [authorId], references: [id], onDelete: Cascade)
   likes     Like[]
   createdAt DateTime  @default(now())
 }
@@ -140,11 +143,30 @@ model Like {
   post      Post?     @relation(fields: [postId], references: [id], onDelete: Cascade)
   commentId Int?
   comment   Comment?  @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  authorId  Int
-  author    Supervisor @relation("SupervisorLikes", fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  Int?
+  author    Supervisor? @relation("SupervisorLikes", fields: [authorId], references: [id], onDelete: Cascade)
   createdAt DateTime  @default(now())
 
   @@unique([postId, authorId])
   @@unique([commentId, authorId])
+}
+
+model ChatMessage {
+  id              Int            @id @default(autoincrement())
+  content         String
+  specializationId Int
+  spec            Specialization @relation(fields: [specializationId], references: [id])
+  authorId        Int?
+  author          Supervisor?     @relation("SupervisorChatMessages", fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt       DateTime       @default(now())
+}
+
+model SystemSetting {
+  id            Int      @id @default(1)
+  designerName  String   @default("محمد الحاوي")
+  designerPhone String   @default("+201022104948")
+  managerName   String   @default("أ. محمد العسيلى")
+  siteName      String   @default("نظام إدارة الزيارات المدرسية")
+  updatedAt     DateTime @updatedAt
 }
 

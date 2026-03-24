@@ -28,8 +28,9 @@ export default async function AdvancedReportsPage({ searchParams }: { searchPara
   ];
 
   // Fetch data with explicit relation includes
-  const supervisors = await prisma.supervisor.findMany({ orderBy: { name: "asc" } });
-  const schools = await prisma.school.findMany({ orderBy: { name: "asc" } });
+  const p = prisma as any;
+  const supervisors = await p.supervisor.findMany({ orderBy: { name: "asc" } });
+  const schools = await p.school.findMany({ orderBy: { name: "asc" } });
 
   const where: any = {};
   if (type === "monthly") {
@@ -45,16 +46,19 @@ export default async function AdvancedReportsPage({ searchParams }: { searchPara
   if (params.supervisorId) where.supervisorId = parseInt(params.supervisorId);
   if (params.schoolId) where.schoolId = parseInt(params.schoolId);
 
-  // Fetch visits with relations
-  const visits = await prisma.visit.findMany({
-    where,
-    include: { 
-      school: true, 
-      supervisor: true, 
-      report: true 
-    } as any, 
-    orderBy: { date: "asc" }
-  });
+  // Fetch visits with relations and system settings
+  const [visits, settings] = await Promise.all([
+    p.visit.findMany({
+      where,
+      include: { 
+        school: true, 
+        supervisor: true, 
+        report: true 
+      } as any, 
+      orderBy: { date: "asc" }
+    }),
+    p.systemSetting.findUnique({ where: { id: 1 } })
+  ]);
 
   return (
     <div dir="rtl" className="report-container" style={{ minHeight: "100vh", paddingBottom: "3rem" }}>
@@ -80,7 +84,7 @@ export default async function AdvancedReportsPage({ searchParams }: { searchPara
           <div>
             <label style={{ display: "block", fontSize: "0.9rem", color: "var(--secondary-dark-navy)", marginBottom: "0.5rem", fontWeight: "800" }}>الشهر (للخطة الشهرية):</label>
             <select name="month" defaultValue={selectedMonth} className="input-field" style={{ width: "100%", padding: "0.8rem", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--background-light)", fontWeight: "600" }}>
-              {arabicMonths.map((m, i) => (
+              {arabicMonths.map((m: string, i: number) => (
                 <option key={i} value={i}>{m}</option>
               ))}
             </select>
@@ -89,14 +93,14 @@ export default async function AdvancedReportsPage({ searchParams }: { searchPara
             <label style={{ display: "block", fontSize: "0.9rem", color: "var(--secondary-dark-navy)", marginBottom: "0.5rem", fontWeight: "800" }}>تصفية بموجه محدد:</label>
             <select name="supervisorId" defaultValue={params.supervisorId || ""} className="input-field" style={{ width: "100%", padding: "0.8rem", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--background-light)", fontWeight: "600" }}>
               <option value="">جميع الموجهين (عرض الكل)</option>
-              {supervisors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+              {supervisors.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </div>
           <div>
             <label style={{ display: "block", fontSize: "0.9rem", color: "var(--secondary-dark-navy)", marginBottom: "0.5rem", fontWeight: "800" }}>تصفية بمدرسة محددة:</label>
             <select name="schoolId" defaultValue={params.schoolId || ""} className="input-field" style={{ width: "100%", padding: "0.8rem", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--background-light)", fontWeight: "600" }}>
               <option value="">جميع المدارس (عرض الكل)</option>
-              {schools.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+              {schools.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </div>
           <div>
@@ -113,12 +117,12 @@ export default async function AdvancedReportsPage({ searchParams }: { searchPara
         {/* Report Header - Formal Layout */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "2rem", borderBottom: "3px double #000", paddingBottom: "1.5rem" }}>
           <div style={{ textAlign: "right", lineHeight: "1.6" }}>
-            <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "bold" }}>وزارة التربية والتعليم والتعليم الفني</h3>
+            <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "bold" }}>{settings?.siteName || "وزارة التربية والتعليم والتعليم الفني"}</h3>
             <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "bold" }}>مديرية التربية والتعليم بالشرقية</h3>
             <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "bold" }}>إدارة غرب الزقازيق التعليمية — التوجيه</h3>
           </div>
           <div style={{ textAlign: "center" }}>
-            <div style={{ width: "80px", height: "80px", border: "2px solid #000", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px", fontWeight: "bold", fontSize: "1.5rem" }}>شعار</div>
+            <img src="/moe-logo.png" alt="شعار الوزارة" style={{ width: "90px", height: "auto", margin: "0 auto 10px" }} />
           </div>
           <div style={{ textAlign: "left", lineHeight: "1.6", minWidth: "200px" }}>
             <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "bold" }}>السجل المرجعي للزيارات</h3>
@@ -149,7 +153,7 @@ export default async function AdvancedReportsPage({ searchParams }: { searchPara
             {visits.length === 0 ? (
               <tr><td colSpan={6} style={{ padding: "3rem", fontSize: "1.2rem", fontWeight: "bold" }}>لا توجد بيانات مسجلة في هذا النطاق الزمني.</td></tr>
             ) : (
-              visits.map((visit: any, index) => (
+              visits.map((visit: any, index: any) => (
                 <tr key={visit.id}>
                   <td style={{ padding: "12px 8px", border: "1px solid #000", fontWeight: "bold" }}>{index + 1}</td>
                   <td style={{ padding: "12px 8px", border: "1px solid #000" }}>
@@ -192,7 +196,7 @@ export default async function AdvancedReportsPage({ searchParams }: { searchPara
           </div>
           <div>
             <p style={{ fontWeight: "bold", fontSize: "1.1rem" }}>يعتمد، وكيل الإدارة</p>
-            <p style={{ marginTop: "1rem", fontWeight: "900", fontSize: "1.2rem" }}>أ. محمد العسيلى</p>
+            <p style={{ marginTop: "1rem", fontWeight: "900", fontSize: "1.2rem" }}>{settings?.managerName || "أ. محمد العسيلى"}</p>
             <div style={{ marginTop: "1rem", width: "70%", margin: "1rem auto 0", borderBottom: "1px dashed #000" }}></div>
           </div>
         </div>

@@ -6,7 +6,8 @@ import { revalidatePath } from "next/cache";
 
 export async function createPostAction(formData: FormData) {
   const user = await getSession();
-  if (!user || user.role !== "SUPERVISOR" || !user.supervisorId) return;
+  if (!user) return;
+  if (user.role !== "ADMIN" && (user.role !== "SUPERVISOR" || !user.supervisorId)) return;
 
   const content = formData.get("content") as string;
   const level = formData.get("level") as string;
@@ -14,14 +15,19 @@ export async function createPostAction(formData: FormData) {
 
   if (!content || !level || !specializationIdRaw) return;
 
-  await (prisma as any).post.create({
-    data: {
-      content,
-      level,
-      specializationId: parseInt(specializationIdRaw),
-      authorId: user.supervisorId,
-    }
-  });
+  try {
+    await (prisma as any).post.create({
+      data: {
+        content,
+        level,
+        specializationId: parseInt(specializationIdRaw),
+        authorId: user.role === "ADMIN" ? null : user.supervisorId,
+      }
+    });
+  } catch (error) {
+    console.error("Error creating post:", error);
+    throw new Error("Failed to create post. Check server logs.");
+  }
 
   revalidatePath("/community");
 }
@@ -42,7 +48,8 @@ export async function deletePostAction(postId: number) {
 
 export async function createCommentAction(formData: FormData) {
   const user = await getSession();
-  if (!user || user.role !== "SUPERVISOR" || !user.supervisorId) return;
+  if (!user) return;
+  if (user.role !== "ADMIN" && (user.role !== "SUPERVISOR" || !user.supervisorId)) return;
 
   const content = formData.get("content") as string;
   const postIdRaw = formData.get("postId") as string;
@@ -53,7 +60,7 @@ export async function createCommentAction(formData: FormData) {
     data: {
       content,
       postId: parseInt(postIdRaw),
-      authorId: user.supervisorId,
+      authorId: user.role === "ADMIN" ? null : user.supervisorId,
     }
   });
 

@@ -6,6 +6,7 @@ import ExcelExportButton from "@/app/components/ExcelExportButton";
 import { addSupervisorAction, editSupervisorAction, deleteSupervisorAction } from "./actions";
 import { sendAllCredentialsAction } from "@/app/login/actions";
 import { importSupervisorsCSVAction } from "../admin/import-actions";
+import { toggleChatBanAction } from "@/app/chat/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -157,6 +158,11 @@ export default async function SupervisorsPage({ searchParams }: { searchParams: 
                           <form action={deleteSupervisorAction}>
                             <input type="hidden" name="supervisorId" value={sup.id} />
                             <button type="submit" style={{ background: "none", border: "none", color: "var(--danger)", cursor: "pointer", fontSize: "0.9rem", padding: 0, fontFamily: "inherit" }}>حذف</button>
+                          </form>
+                          <form action={async () => { "use server"; await toggleChatBanAction(sup.id); }}>
+                            <button type="submit" title={sup.isBannedFromChat ? "فك حظر الدردشة" : "حظر من الدردشة"} style={{ background: "none", border: "none", color: sup.isBannedFromChat ? "var(--success)" : "var(--danger)", cursor: "pointer", fontSize: "1.1rem" }}>
+                              {sup.isBannedFromChat ? "🟢" : "⛔"}
+                            </button>
                           </form>
                         </div>
                       </td>

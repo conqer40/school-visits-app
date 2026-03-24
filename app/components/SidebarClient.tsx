@@ -9,9 +9,10 @@ import Clock from "./Clock";
 interface SidebarClientProps {
   user: any;
   isAdmin: boolean;
+  settings?: any;
 }
 
-export default function SidebarClient({ user, isAdmin }: SidebarClientProps) {
+export default function SidebarClient({ user, isAdmin, settings }: SidebarClientProps) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
@@ -23,20 +24,24 @@ export default function SidebarClient({ user, isAdmin }: SidebarClientProps) {
     setIsOpen(false);
   }, [pathname]);
 
-  const navLinks = isAdmin ? [
+  const navLinks: { href: string; icon: string; label: string; badge?: string }[] = isAdmin ? [
     { href: "/dashboard", icon: "🏠", label: "لوحة التحكم" },
     { href: "/schools", icon: "🏫", label: "المدارس" },
     { href: "/supervisors", icon: "👥", label: "الموجهين" },
     { href: "/specializations", icon: "📚", label: "التخصصات" },
     { href: "/schedule", icon: "📅", label: "الجدول الشهري" },
+    { href: "/chat", icon: "💬", label: "غرف الدردشة", badge: "جديد" },
     { href: "/community", icon: "🤝", label: "مجتمع الموجهين" },
-    { href: "/whatsapp", icon: "💬", label: "الواتساب" },
+    {href: "/whatsapp", icon: "📱", label: "الواتساب" },
+    { href: "/admins/broadcast", icon: "📢", label: "الرسائل الجماعية", badge: "جديد" },
     { href: "/reports", icon: "📊", label: "سجل النشاط" },
+    { href: "/settings", icon: "⚙️", label: "إعدادات النظام" },
     { href: "/admins", icon: "🛡️", label: "إدارة الإداريين" },
     { href: "/admins/backup", icon: "💾", label: "النظام والضبط" },
   ] : [
     { href: "/my-schedule", icon: "📅", label: "جدولي اليومي" },
     { href: "/my-reports", icon: "📝", label: "تقاريري السابقة" },
+    { href: "/chat", icon: "💬", label: "غرف الدردشة", badge: "جديد" },
     { href: "/community", icon: "🤝", label: "مجتمع الموجهين" },
     { href: "/my-schedule/settings", icon: "⚙️", label: "إعدادات الحساب" },
   ];
@@ -70,8 +75,8 @@ export default function SidebarClient({ user, isAdmin }: SidebarClientProps) {
         {/* Brand & Clock */}
         <div style={{ padding: "1.8rem 1.5rem", borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(0,0,0,0.1)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "1rem" }}>
-             <div style={{ width: "45px", height: "45px", background: "linear-gradient(135deg, var(--accent-gold), #f97316)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem", fontWeight: "800", color: "var(--primary-deep-blue)", boxShadow: "0 4px 10px rgba(245, 158, 11, 0.4)" }}>
-              W
+             <div style={{ width: "45px", height: "45px", background: "linear-gradient(135deg, var(--accent-gold), #f97316)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", fontWeight: "800", color: "var(--primary-deep-blue)", boxShadow: "0 4px 10px rgba(245, 158, 11, 0.4)" }}>
+              🎓
             </div>
             <div>
               <h2 style={{ fontSize: "1.2rem", margin: 0, color: "white", fontWeight: "800", letterSpacing: "0.5px" }}>نظام الزيارات</h2>
@@ -101,9 +106,17 @@ export default function SidebarClient({ user, isAdmin }: SidebarClientProps) {
                 <Link 
                   href={link.href}
                   className={`nav-link ${pathname === link.href ? "active" : ""}`}
+                  onClick={closeSidebar} // Added onClick to close sidebar on mobile
                 >
                   <span style={{ fontSize: "1.2rem", width: "30px", textAlign: "center" }}>{link.icon}</span>
                   <span>{link.label}</span>
+                  {link.badge && (
+                    <span className="pulse-badge" style={{
+                      background: "var(--accent-gold)", color: "var(--primary-deep-blue)", padding: "2px 6px", 
+                      borderRadius: "10px", fontSize: "0.6rem", fontWeight: "bold", marginLeft: "auto",
+                      animation: "pulse 2s infinite"
+                    }}>{link.badge}</span>
+                  )}
                 </Link>
               </li>
             ))}
@@ -129,9 +142,17 @@ export default function SidebarClient({ user, isAdmin }: SidebarClientProps) {
               <span style={{ fontSize: "1.1rem" }}>🚪</span> تسجيل الخروج
             </button>
           </form>
-          <p style={{ textAlign: "center", fontSize: "0.65rem", color: "rgba(255,255,255,0.3)", marginTop: "1.2rem", letterSpacing: "0.5px" }}>
-            تطوير وإشراف: أ. محمد العسيلى
-          </p>
+          
+          <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
+            <p style={{ margin: "0 0 0.5rem 0", fontSize: "0.80rem", color: "rgba(255,255,255,0.7)", fontWeight: "bold" }}>
+              تحت إشراف وكيل الإدارة:<br/>
+              <span style={{ color: "var(--accent-gold)", fontSize: "0.9rem" }}>{settings?.managerName || "أ. محمد العسيلى"}</span>
+            </p>
+            <p style={{ margin: 0, fontSize: "0.7rem", color: "rgba(255,255,255,0.4)", display: "flex", flexDirection: "column", gap: "2px" }}>
+              <span>تصميم وتطوير {settings?.designerName || "م. محمد الحاوي"}</span>
+              <span style={{ direction: "ltr", display: "inline-block" }}>📞 {settings?.designerPhone || "+201022104948"}</span>
+            </p>
+          </div>
         </div>
       </aside>
 

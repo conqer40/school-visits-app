@@ -79,34 +79,32 @@ export default function CommunityFeed({
       </div>
 
       {/* ✍️ Create Post Card */}
-      {!isAdmin && (
-        <div className="card animate-fade-in" style={{ padding: "1.5rem" }}>
-          <div style={{ display: "flex", gap: "12px", marginBottom: "1rem", alignItems: "center" }}>
-            <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: "linear-gradient(135deg, var(--accent-gold), #fcd34d)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", color: "var(--primary-deep-blue)" }}>
-              {user.username.charAt(0)}
-            </div>
-            <div>
-              <p style={{ margin: 0, fontWeight: "bold", fontSize: "0.95rem" }}>إنشاء منشور جديد</p>
-              <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--info)" }}>في مجتمع: {currentSpecName} - {selectedLevel}</p>
-            </div>
+      <div className="card animate-fade-in" style={{ padding: "1.5rem" }}>
+        <div style={{ display: "flex", gap: "12px", marginBottom: "1rem", alignItems: "center" }}>
+          <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: isAdmin ? "var(--danger)" : "linear-gradient(135deg, var(--accent-gold), #fcd34d)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", color: isAdmin ? "white" : "var(--primary-deep-blue)" }}>
+            {isAdmin ? "🛡️" : user.username.charAt(0)}
           </div>
-          
-          <form onSubmit={handleCreatePost}>
-            <textarea 
-              name="content" 
-              placeholder="بم تفكر؟ شارك تعميم، سؤال مهني، أو خبراتك مع زملائك الموجهين..."
-              required
-              rows={3}
-              style={{ resize: "none", background: "rgba(0,0,0,0.02)", border: "1px solid var(--border)", marginBottom: "1rem" }}
-            ></textarea>
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <button disabled={isSubmitting} type="submit" className="btn-primary" style={{ padding: "0.6rem 2rem", borderRadius: "20px" }}>
-                {isSubmitting ? "جاري النشر..." : "نشر المشاركة 🚀"}
-              </button>
-            </div>
-          </form>
+          <div>
+            <p style={{ margin: 0, fontWeight: "bold", fontSize: "0.95rem" }}>{isAdmin ? "بصفتك مدير النظام" : "إنشاء منشور جديد"}</p>
+            <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--info)" }}>في مجتمع: {currentSpecName} - {selectedLevel}</p>
+          </div>
         </div>
-      )}
+        
+        <form onSubmit={handleCreatePost}>
+          <textarea 
+            name="content" 
+            placeholder={isAdmin ? "اكتب تعميماً أو إعلاناً رسمياً للمجتمع..." : "بم تفكر؟ شارك تعميم، سؤال مهني، أو خبراتك مع زملائك الموجهين..."}
+            required
+            rows={3}
+            style={{ resize: "none", background: "rgba(0,0,0,0.02)", border: "1px solid var(--border)", marginBottom: "1rem" }}
+          ></textarea>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <button disabled={isSubmitting} type="submit" className="btn-primary" style={{ padding: "0.6rem 2rem", borderRadius: "20px", background: isAdmin ? "var(--danger)" : "var(--accent-primary)" }}>
+              {isSubmitting ? "جاري النشر..." : (isAdmin ? "نشر كمدير 🛡️" : "نشر المشاركة 🚀")}
+            </button>
+          </div>
+        </form>
+      </div>
 
       {/* 📰 Posts Feed */}
       <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", marginTop: "1rem" }}>
@@ -118,8 +116,9 @@ export default function CommunityFeed({
           </div>
         ) : (
           posts.map((post: any) => {
-            const isLiked = post.likes.some((l:any) => l.authorId === user.supervisorId);
-            const canDeletePost = isAdmin || post.authorId === user.supervisorId;
+            const isLiked = user.supervisorId ? post.likes.some((l:any) => l.authorId === user.supervisorId) : false;
+            const isMine = isAdmin ? (post.authorId === null) : (post.authorId === user.supervisorId);
+            const canDeletePost = isAdmin || isMine;
             const postDate = new Date(post.createdAt).toLocaleDateString("ar-EG", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
             return (
@@ -128,12 +127,12 @@ export default function CommunityFeed({
                 <div style={{ padding: "1.5rem", borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                     <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                      <div style={{ width: "45px", height: "45px", borderRadius: "50%", background: "linear-gradient(135deg, var(--accent-primary), var(--accent-cyan))", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", color: "white", fontSize: "1.2rem", boxShadow: "0 2px 10px rgba(37,99,235,0.3)" }}>
-                        {post.author.name.charAt(0)}
+                      <div style={{ width: "45px", height: "45px", borderRadius: "50%", background: post.authorId === null ? "var(--danger)" : "linear-gradient(135deg, var(--accent-primary), var(--accent-cyan))", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", color: "white", fontSize: "1.2rem", boxShadow: "0 2px 10px rgba(37,99,235,0.3)" }}>
+                        {post.authorId === null ? "🛡️" : post.author.name.charAt(0)}
                       </div>
                       <div>
-                        <h4 style={{ margin: 0, fontWeight: "800", color: "var(--secondary-dark-navy)" }}>{post.author.name}</h4>
-                        <span style={{ fontSize: "0.75rem", color: "var(--info)", fontWeight: "600" }}>موجه أقدم • {post.author.region}</span>
+                        <h4 style={{ margin: 0, fontWeight: "800", color: post.authorId === null ? "var(--danger)" : "var(--secondary-dark-navy)" }}>{post.authorId === null ? "مدير النظام" : post.author.name}</h4>
+                        <span style={{ fontSize: "0.75rem", color: "var(--info)", fontWeight: "600" }}>{post.authorId === null ? "إدارة غرب الزقازيق" : `موجه أقدم • ${post.author.region}`}</span>
                         <div style={{ fontSize: "0.7rem", color: "gray", marginTop: "2px" }}>{postDate}</div>
                       </div>
                     </div>
@@ -171,12 +170,12 @@ export default function CommunityFeed({
                     const canDeleteComment = isAdmin || comment.authorId === user.supervisorId || post.authorId === user.supervisorId;
                     return (
                       <div key={comment.id} style={{ display: "flex", gap: "10px", marginBottom: "1rem" }}>
-                        <div style={{ minWidth: "32px", height: "32px", borderRadius: "50%", background: "#e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", fontSize: "0.8rem", color: "var(--secondary-dark-navy)" }}>
-                          {comment.author.name.charAt(0)}
+                        <div style={{ minWidth: "32px", height: "32px", borderRadius: "50%", background: comment.authorId === null ? "var(--danger)" : "#e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", fontSize: "0.8rem", color: comment.authorId === null ? "white" : "var(--secondary-dark-navy)" }}>
+                          {comment.authorId === null ? "🛡️" : comment.author.name.charAt(0)}
                         </div>
-                        <div style={{ background: "rgba(0,0,0,0.04)", padding: "0.8rem 1rem", borderRadius: "16px", flex: 1, position: "relative" }}>
-                          <div style={{ fontWeight: "800", fontSize: "0.85rem", color: "var(--secondary-dark-navy)", marginBottom: "4px" }}>
-                            {comment.author.name}
+                        <div style={{ background: comment.authorId === null ? "rgba(239,68,68,0.05)" : "rgba(0,0,0,0.04)", padding: "0.8rem 1rem", borderRadius: "16px", flex: 1, position: "relative", border: comment.authorId === null ? "1px solid rgba(239,68,68,0.2)" : "none" }}>
+                          <div style={{ fontWeight: "800", fontSize: "0.85rem", color: comment.authorId === null ? "var(--danger)" : "var(--secondary-dark-navy)", marginBottom: "4px" }}>
+                            {comment.authorId === null ? "مدير النظام" : comment.author.name}
                           </div>
                           <div style={{ fontSize: "0.9rem", lineHeight: "1.4" }}>{comment.content}</div>
                           
@@ -191,22 +190,20 @@ export default function CommunityFeed({
                   })}
 
                   {/* Add Comment Input */}
-                  {!isAdmin && (
-                     <form action={createCommentAction} style={{ display: "flex", gap: "10px", marginTop: "1rem" }}>
-                      <input type="hidden" name="postId" value={post.id} />
-                      <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "var(--accent-primary)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", fontSize: "0.8rem", color: "white" }}>
-                        {user.username.charAt(0)}
-                      </div>
-                      <input 
-                        type="text" 
-                        name="content"
-                        placeholder="أضف تعليقاً..." 
-                        required 
-                        style={{ flex: 1, padding: "0.6rem 1rem", borderRadius: "20px", background: "rgba(0,0,0,0.03)", border: "1px solid var(--border)", fontSize: "0.9rem" }}
-                      />
-                      <button type="submit" style={{ background: "none", border: "none", fontSize: "1.5rem", cursor: "pointer", color: "var(--accent-primary)" }}>✈️</button>
-                    </form>
-                  )}
+                  <form action={createCommentAction} style={{ display: "flex", gap: "10px", marginTop: "1rem" }}>
+                    <input type="hidden" name="postId" value={post.id} />
+                    <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: isAdmin ? "var(--danger)" : "var(--accent-primary)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", fontSize: "0.8rem", color: "white" }}>
+                      {isAdmin ? "🛡️" : user.username.charAt(0)}
+                    </div>
+                    <input 
+                      type="text" 
+                      name="content"
+                      placeholder={isAdmin ? "الرد كمدير للنظام..." : "أضف تعليقاً..."} 
+                      required 
+                      style={{ flex: 1, padding: "0.6rem 1rem", borderRadius: "20px", background: "rgba(0,0,0,0.03)", border: "1px solid var(--border)", fontSize: "0.9rem" }}
+                    />
+                    <button type="submit" style={{ background: "none", border: "none", fontSize: "1.5rem", cursor: "pointer", color: isAdmin ? "var(--danger)" : "var(--accent-primary)" }}>✈️</button>
+                  </form>
                 </div>
               </div>
             );

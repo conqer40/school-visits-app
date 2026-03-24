@@ -44,6 +44,23 @@ export default async function MySchedulePage() {
           <h3 style={{ fontSize: "1rem", color: "#666", margin: "0 0 0.5rem 0" }}>ما تم إنجازه</h3>
           <p style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--success)", margin: 0 }}>{completedCount}</p>
         </div>
+        <Link href="/chat" style={{ textDecoration: "none" }}>
+          <div className="card-hover-effect" style={{
+            padding: "1.5rem",
+            textAlign: "center",
+            background: "linear-gradient(135deg, #2563eb, #60a5fa)",
+            color: "white",
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            boxShadow: "0 8px 20px rgba(37, 99, 235, 0.2)",
+            transition: "transform 0.2s"
+          }}>
+            <h3 style={{ fontSize: "1rem", color: "rgba(255,255,255,0.9)", margin: "0 0 0.5rem 0" }}>💬 غرفة الدردشة</h3>
+            <p style={{ fontSize: "1.2rem", fontWeight: "bold", margin: 0 }}>تواصل مع التخصص</p>
+          </div>
+        </Link>
         <div className="card" style={{ padding: "1.5rem", textAlign: "center" }}>
           <h3 style={{ fontSize: "1rem", color: "#666", margin: "0 0 0.5rem 0" }}>المتبقي / معلق</h3>
           <p style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--accent-gold)", margin: 0 }}>{pendingCount}</p>
