@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 
 const p = prisma as any;
 
+const dayNames = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+
 // Returns all working days (Sun–Thu + Sat, excludes Friday) in the given month/year
 function getWorkingDays(year: number, month: number): Date[] {
   const days: Date[] = [];
@@ -18,7 +20,6 @@ function getWorkingDays(year: number, month: number): Date[] {
   return days;
 }
 
-const dayNames = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
 
 /**
  * الخوارزمية v5.2:
@@ -319,5 +320,36 @@ export async function rejectExcuseAction(reportId: number) {
     console.error("Reject Excuse Error:", e.message);
   }
 }
+
+export async function adminAddManualVisitAction(formData: FormData) {
+  try {
+    const schoolId = parseInt(formData.get("schoolId") as string);
+    const supervisorId = parseInt(formData.get("supervisorId") as string);
+    const dateStr = formData.get("date") as string;
+    
+    const date = new Date(dateStr);
+    const dayOfWeek = dayNames[date.getDay()];
+
+    await p.visit.create({
+      data: {
+        schoolId,
+        supervisorId,
+        date,
+        dayOfWeek,
+        status: "PENDING",
+        isManual: true,
+        adminApproval: "APPROVED"
+      }
+    });
+
+    revalidatePath("/schedule");
+    revalidatePath("/my-schedule");
+    revalidatePath("/");
+  } catch (e: any) {
+    console.error("Admin Add Manual Visit Error:", e.message);
+    throw e;
+  }
+}
+
 
 

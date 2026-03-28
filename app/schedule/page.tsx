@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { generateScheduleAction, updateVisitStatusAction, clearPendingScheduleAction } from "./actions";
+import { generateScheduleAction, updateVisitStatusAction, clearPendingScheduleAction, adminAddManualVisitAction } from "./actions";
 import Link from "next/link";
 import ViewReportModal from "@/app/components/ViewReportModal";
 import VisitAdminActions from "@/app/components/VisitAdminActions";
@@ -58,6 +58,36 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
           </form>
         </div>
       </div>
+
+      {/* Add Manual Visit Form (Admin) */}
+      <section className="card" style={{ marginBottom: "2rem", borderRight: "4px solid var(--primary-deep-blue)" }}>
+        <h2 style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>➕ إضافة زيارة يدوية (مباشرة)</h2>
+        <form action={adminAddManualVisitAction} style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "flex-end" }}>
+          <div style={{ flex: 1, minWidth: "200px" }}>
+            <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: "#666" }}>المدرسة:</label>
+            <select name="schoolId" required style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--border)" }}>
+              <option value="">-- اختر مدرسة --</option>
+              {allSchools.map(s => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+          </div>
+          <div style={{ flex: 1, minWidth: "200px" }}>
+            <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: "#666" }}>الموجه:</label>
+            <select name="supervisorId" required style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--border)" }}>
+              <option value="">-- اختر موجه --</option>
+              {allSupervisors.map(sup => (
+                <option key={sup.id} value={sup.id}>{sup.name}</option>
+              ))}
+            </select>
+          </div>
+          <div style={{ width: "160px" }}>
+            <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: "#666" }}>التاريخ:</label>
+            <input type="date" name="date" required style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--border)" }} />
+          </div>
+          <button type="submit" className="btn-primary" style={{ padding: "0.7rem 1.5rem" }}>إضافة الزيارة</button>
+        </form>
+      </section>
 
       <div className="card" style={{ marginBottom: "1.5rem" }}>
         <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "var(--primary-deep-blue)", fontSize: "1rem" }}>🔍 تصفية الجدول</h3>
