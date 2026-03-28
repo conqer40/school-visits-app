@@ -8,12 +8,16 @@ export default function VisitAdminActions({ visit, schools, supervisors }: any) 
   const [reason, setReason] = useState("");
 
   const handleEdit = async (formData: FormData) => {
-    const schoolId = parseInt(formData.get("schoolId") as string);
-    const supervisorId = parseInt(formData.get("supervisorId") as string);
-    const date = formData.get("date") as string;
-    
-    await editVisitAction(visit.id, { schoolId, supervisorId, date });
-    setIsEditOpen(false);
+    try {
+      const schoolId = parseInt(formData.get("schoolId") as string);
+      const supervisorId = parseInt(formData.get("supervisorId") as string);
+      const date = formData.get("date") as string;
+      
+      await editVisitAction(visit.id, { schoolId, supervisorId, date });
+      setIsEditOpen(false);
+    } catch (e: any) {
+      alert("⚠️ فشل الحفظ: قد يكون هناك زيارة أخرى لنفس المدرسة في هذا التاريخ، أو حدث خطأ في الاتصال.");
+    }
   };
 
   return (

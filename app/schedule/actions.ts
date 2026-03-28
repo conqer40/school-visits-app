@@ -193,7 +193,9 @@ export async function updateVisitStatusAction(visitId: number, status: string) {
     }
     revalidatePath("/schedule");
     revalidatePath("/");
-  } catch (e) {}
+  } catch (e: any) {
+    console.error("Update Visit Status Error:", e.message);
+  }
 }
 
 export async function clearPendingScheduleAction() {
@@ -224,7 +226,9 @@ export async function approveManualVisitAction(visitId: number) {
     });
     revalidatePath("/schedule");
     revalidatePath("/");
-  } catch (e) {}
+  } catch (e: any) {
+    console.error("Approve Manual Visit Error:", e.message);
+  }
 }
 
 export async function rejectManualVisitAction(visitId: number, reason: string) {
@@ -238,7 +242,9 @@ export async function rejectManualVisitAction(visitId: number, reason: string) {
     });
     revalidatePath("/schedule");
     revalidatePath("/");
-  } catch (e) {}
+  } catch (e: any) {
+    console.error("Reject Manual Visit Error:", e.message);
+  }
 }
 
 export async function editVisitAction(visitId: number, data: { schoolId?: number, supervisorId?: number, date?: string }) {
@@ -263,8 +269,12 @@ export async function editVisitAction(visitId: number, data: { schoolId?: number
 
     revalidatePath("/schedule");
     revalidatePath("/my-schedule");
+    revalidatePath("/reports");
     revalidatePath("/");
-  } catch (e) {}
+  } catch (e: any) {
+    console.error("Edit Visit Action Error:", e.message);
+    throw e;
+  }
 }
 
 export async function approveExcuseAction(reportId: number) {
@@ -283,7 +293,9 @@ export async function approveExcuseAction(reportId: number) {
     });
     revalidatePath("/reports");
     revalidatePath("/schedule");
-  } catch (e) {}
+  } catch (e: any) {
+    console.error("Approve Excuse Error:", e.message);
+  }
 }
 
 export async function rejectExcuseAction(reportId: number) {
@@ -303,7 +315,9 @@ export async function rejectExcuseAction(reportId: number) {
     });
     revalidatePath("/reports");
     revalidatePath("/schedule");
-  } catch (e) {}
+  } catch (e: any) {
+    console.error("Reject Excuse Error:", e.message);
+  }
 }
 
 
