@@ -92,7 +92,6 @@ model Visit {
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 
-  @@unique([schoolId, date])
 }
 
 model VisitReport {

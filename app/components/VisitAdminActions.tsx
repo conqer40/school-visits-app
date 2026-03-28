@@ -11,12 +11,22 @@ export default function VisitAdminActions({ visit, schools, supervisors }: any) 
     try {
       const schoolId = parseInt(formData.get("schoolId") as string);
       const supervisorId = parseInt(formData.get("supervisorId") as string);
-      const date = formData.get("date") as string;
+      const dateStr = formData.get("date") as string;
       
-      await editVisitAction(visit.id, { schoolId, supervisorId, date });
+      // Duplicate check
+      const { checkDuplicateVisitAction } = await import("@/app/schedule/actions");
+      const isDup = await checkDuplicateVisitAction(schoolId, dateStr, visit.id);
+      
+      if (isDup) {
+        if (!confirm("⚠️ تنبيه: توجد زيارة أخرى لهذه المدرسة في نفس التاريخ. هل تريد الاستمرار في حفظ التعديل على أي حال؟")) {
+          return;
+        }
+      }
+
+      await editVisitAction(visit.id, { schoolId, supervisorId, date: dateStr });
       setIsEditOpen(false);
     } catch (e: any) {
-      alert("⚠️ فشل الحفظ: قد يكون هناك زيارة أخرى لنفس المدرسة في هذا التاريخ، أو حدث خطأ في الاتصال.");
+      alert("⚠️ فشل الحفظ: حدث خطأ غير متوقع.");
     }
   };
 

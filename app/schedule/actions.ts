@@ -326,9 +326,17 @@ export async function adminAddManualVisitAction(formData: FormData) {
     const schoolId = parseInt(formData.get("schoolId") as string);
     const supervisorId = parseInt(formData.get("supervisorId") as string);
     const dateStr = formData.get("date") as string;
+    const force = formData.get("force") === "true";
     
     const date = new Date(dateStr);
     const dayOfWeek = dayNames[date.getDay()];
+
+    if (!force) {
+       const existing = await p.visit.findFirst({
+         where: { schoolId, date: { gte: new Date(date.setHours(0,0,0,0)), lt: new Date(date.setHours(23,59,59,999)) } }
+       });
+       if (existing) return { error: "DUPLICATE", message: "يوجد زيارة أخرى لهذه المدرسة في هذا التاريخ بالفعل." };
+    }
 
     await p.visit.create({
       data: {
@@ -345,11 +353,29 @@ export async function adminAddManualVisitAction(formData: FormData) {
     revalidatePath("/schedule");
     revalidatePath("/my-schedule");
     revalidatePath("/");
+    return { success: true };
   } catch (e: any) {
     console.error("Admin Add Manual Visit Error:", e.message);
-    throw e;
+    return { error: "ERROR", message: e.message };
   }
 }
+
+export async function checkDuplicateVisitAction(schoolId: number, dateStr: string, excludeId?: number) {
+  try {
+    const date = new Date(dateStr);
+    const existing = await p.visit.findFirst({
+      where: { 
+        schoolId, 
+        date: { gte: new Date(date.setHours(0,0,0,0)), lt: new Date(date.setHours(23,59,59,999)) },
+        id: excludeId ? { not: excludeId } : undefined
+      }
+    });
+    return !!existing;
+  } catch (e) {
+    return false;
+  }
+}
+
 
 
 
