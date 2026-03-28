@@ -26,7 +26,8 @@ export default function VisitAdminActions({ visit, schools, supervisors }: any) 
       await editVisitAction(visit.id, { schoolId, supervisorId, date: dateStr });
       setIsEditOpen(false);
     } catch (e: any) {
-      alert("⚠️ فشل الحفظ: حدث خطأ غير متوقع.");
+      console.error(e);
+      alert("⚠️ فشل الحفظ: " + (e.message || "خطأ غير متوقع"));
     }
   };
 
