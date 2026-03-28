@@ -255,6 +255,7 @@ export async function editVisitAction(visitId: number, data: { schoolId?: number
     if (data.supervisorId) updateData.supervisorId = data.supervisorId;
     if (data.date) {
       const newDate = new Date(data.date);
+      if (isNaN(newDate.getTime())) throw new Error("التاريخ غير صالح");
       updateData.date = newDate;
       updateData.dayOfWeek = dayNames[newDate.getDay()];
     }
