@@ -23,11 +23,15 @@ export default function VisitAdminActions({ visit, schools, supervisors }: any) 
         }
       }
 
-      await editVisitAction(visit.id, { schoolId, supervisorId, date: dateStr });
-      setIsEditOpen(false);
+      const res = await editVisitAction(visit.id, { schoolId, supervisorId, date: dateStr });
+      if (res?.error) {
+        alert("⚠️ فشل الحفظ: " + res.error);
+      } else {
+        setIsEditOpen(false);
+      }
     } catch (e: any) {
       console.error(e);
-      alert("⚠️ فشل الحفظ: " + (e.message || "خطأ غير متوقع"));
+      alert("⚠️ فشل الحفظ: عطل في الاتصال");
     }
   };
 
@@ -64,9 +68,12 @@ export default function VisitAdminActions({ visit, schools, supervisors }: any) 
         onClick={async () => {
           if (confirm("⚠️ هل أنت متأكد من رغبتك في حذف هذه الزيارة نهائياً؟")) {
              try {
-               await deleteVisitAction(visit.id);
+               const res = await deleteVisitAction(visit.id);
+               if (res?.error) {
+                 alert("❌ فشل الحذف: " + res.error);
+               }
              } catch (e) {
-               alert("❌ فشل الحذف.");
+               alert("❌ فشل الحذف: عطل في الاتصال");
              }
           }
         }}

@@ -260,6 +260,9 @@ export async function editVisitAction(visitId: number, data: { schoolId?: number
       updateData.dayOfWeek = dayNames[newDate.getDay()];
     }
 
+    const visit = await p.visit.findUnique({ where: { id: visitId } });
+    if (!visit) return { error: "الزيارة غير موجودة" };
+
     await p.visit.update({
       where: { id: visitId },
       data: updateData
@@ -273,9 +276,10 @@ export async function editVisitAction(visitId: number, data: { schoolId?: number
     revalidatePath("/my-schedule");
     revalidatePath("/reports");
     revalidatePath("/");
+    return { success: true };
   } catch (e: any) {
     console.error("Edit Visit Action Error:", e.message);
-    throw e;
+    return { error: e.message || "حدث خطأ غير متوقع" };
   }
 }
 
@@ -390,9 +394,10 @@ export async function deleteVisitAction(visitId: number) {
     revalidatePath("/schedule");
     revalidatePath("/my-schedule");
     revalidatePath("/");
+    return { success: true };
   } catch (e: any) {
     console.error("Delete Visit Error:", e.message);
-    throw e;
+    return { error: e.message || "حدث خطأ أثناء الحذف" };
   }
 }
 
