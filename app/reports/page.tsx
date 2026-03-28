@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession, egyptDateTime } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import ExcelExportButton from "@/app/components/ExcelExportButton";
+import { approveExcuseAction, rejectExcuseAction } from "@/app/schedule/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -71,8 +72,40 @@ export default async function ReportsPage() {
                   مدرسة: <strong style={{ color: "var(--secondary-dark-navy)" }}>{report.visit.school.name}</strong>
                 </div>
                 {report.isExcuse ? (
-                  <div style={{ color: "var(--danger)", background: "#fff5f5", padding: "0.5rem", borderRadius: "4px", marginTop: "0.5rem" }}>
-                    🛑 اعتذار: {report.reportText}
+                  <div style={{ color: "var(--danger)", background: "#fff5f5", padding: "1rem", borderRadius: "8px", marginTop: "0.5rem", border: "1px solid #fee2e2" }}>
+                    <div style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>🛑 اعتذار: {report.reportText}</div>
+                    {report.replacementName && (
+                      <div style={{ color: "var(--success)", fontSize: "0.85rem", marginBottom: "0.5rem" }}>
+                        👤 البديل المقترح: <strong>{report.replacementName}</strong>
+                      </div>
+                    )}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1rem" }}>
+                      <div style={{ fontSize: "0.8rem" }}>
+                         الحالة: 
+                         <span style={{ 
+                           marginLeft: "10px", 
+                           fontWeight: "bold", 
+                           color: report.excuseStatus === "PENDING" ? "var(--accent-gold)" : report.excuseStatus === "APPROVED" ? "var(--success)" : "var(--danger)" 
+                         }}>
+                           {report.excuseStatus === "PENDING" ? "⏳ في انتظار الاعتماد" : report.excuseStatus === "APPROVED" ? "✅ معتمد" : "❌ مرفوض"}
+                         </span>
+                      </div>
+                      
+                      {report.excuseStatus === "PENDING" && (
+                        <div style={{ display: "flex", gap: "0.5rem" }}>
+                           <form action={approveExcuseAction.bind(null, report.id)}>
+                              <button type="submit" style={{ padding: "0.4rem 0.8rem", background: "var(--success)", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "0.8rem" }}>
+                                اعتماد
+                              </button>
+                           </form>
+                           <form action={rejectExcuseAction.bind(null, report.id)}>
+                              <button type="submit" style={{ padding: "0.4rem 0.8rem", background: "var(--danger)", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "0.8rem" }}>
+                                رفض
+                              </button>
+                           </form>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   <div style={{ color: "#555", marginTop: "0.5rem", fontStyle: "italic" }}>

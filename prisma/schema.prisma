@@ -81,6 +81,9 @@ model Visit {
   date            DateTime
   dayOfWeek       String
   status          String     @default("PENDING") // PENDING, COMPLETED, MISSED, EXCUSED
+  isManual        Boolean    @default(false)
+  adminApproval   String     @default("APPROVED") // PENDING, APPROVED, REJECTED
+  rejectionReason String?
   checkInTime     DateTime?
   checkInLat      Float?
   checkInLng      Float?
@@ -93,15 +96,17 @@ model Visit {
 }
 
 model VisitReport {
-  id            Int      @id @default(autoincrement())
-  visit         Visit    @relation(fields: [visitId], references: [id])
-  visitId       Int      @unique
-  supervisor    Supervisor @relation(fields: [supervisorId], references: [id])
-  supervisorId  Int
-  reportText    String
-  isExcuse      Boolean  @default(false) // true = اعتذار
-  excuseReason  String?
-  createdAt     DateTime @default(now())
+  id              Int      @id @default(autoincrement())
+  visit           Visit    @relation(fields: [visitId], references: [id])
+  visitId         Int      @unique
+  supervisor      Supervisor @relation(fields: [supervisorId], references: [id])
+  supervisorId    Int
+  reportText      String
+  isExcuse        Boolean  @default(false) // true = اعتذار
+  excuseReason    String?
+  excuseStatus    String   @default("APPROVED") // PENDING, APPROVED, REJECTED
+  replacementName String?  // اسم البديل في حالة الاعتذار
+  createdAt       DateTime @default(now())
 }
 
 model Log {

@@ -30,6 +30,7 @@ export async function submitVisitReportAction(visitId: number, formData: FormDat
   const reportText = formData.get("reportText") as string;
   const isExcuse = formData.get("isExcuse") === "on";
   const excuseReason = formData.get("excuseReason") as string;
+  const replacementName = formData.get("replacementName") as string;
 
   await (prisma as any).visitReport.create({
     data: {
@@ -38,6 +39,8 @@ export async function submitVisitReportAction(visitId: number, formData: FormDat
       reportText,
       isExcuse,
       excuseReason: isExcuse ? excuseReason : null,
+      excuseStatus: isExcuse ? "PENDING" : "APPROVED",
+      replacementName: isExcuse ? replacementName : null
     },
   });
 
@@ -87,3 +90,32 @@ export async function updatePasswordAction(formData: FormData) {
   revalidatePath("/my-schedule/settings");
   redirect("/my-schedule");
 }
+
+export async function addManualVisitAction(formData: FormData) {
+  const user = await getSession();
+  if (!user || user.role !== "SUPERVISOR") throw new Error("Unauthorized");
+
+  const schoolId = parseInt(formData.get("schoolId") as string);
+  const dateStr = formData.get("date") as string;
+  
+  const date = new Date(dateStr);
+  const dayNames = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+  const dayOfWeek = dayNames[date.getDay()];
+
+  await (prisma as any).visit.create({
+    data: {
+      schoolId,
+      supervisorId: user.supervisorId!,
+      date,
+      dayOfWeek,
+      status: "PENDING",
+      isManual: true,
+      adminApproval: "PENDING"
+    }
+  });
+
+  revalidatePath("/my-schedule");
+  revalidatePath("/schedule");
+  redirect("/my-schedule");
+}
+

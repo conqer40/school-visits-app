@@ -213,3 +213,97 @@ export async function clearPendingScheduleAction() {
   } catch (e: any) {}
 }
 
+export async function approveManualVisitAction(visitId: number) {
+  try {
+    await p.visit.update({
+      where: { id: visitId },
+      data: { adminApproval: "APPROVED", status: "PENDING" }
+    });
+    await p.log.create({
+      data: { action: "APPROVE_MANUAL_VISIT", details: `تمت الموافقة على زيارة يدوية رقم ${visitId}` }
+    });
+    revalidatePath("/schedule");
+    revalidatePath("/");
+  } catch (e) {}
+}
+
+export async function rejectManualVisitAction(visitId: number, reason: string) {
+  try {
+    await p.visit.update({
+      where: { id: visitId },
+      data: { adminApproval: "REJECTED", rejectionReason: reason, status: "MISSED" }
+    });
+    await p.log.create({
+      data: { action: "REJECT_MANUAL_VISIT", details: `تم رفض زيارة يدوية رقم ${visitId}: ${reason}` }
+    });
+    revalidatePath("/schedule");
+    revalidatePath("/");
+  } catch (e) {}
+}
+
+export async function editVisitAction(visitId: number, data: { schoolId?: number, supervisorId?: number, date?: string }) {
+  try {
+    const updateData: any = {};
+    if (data.schoolId) updateData.schoolId = data.schoolId;
+    if (data.supervisorId) updateData.supervisorId = data.supervisorId;
+    if (data.date) {
+      const newDate = new Date(data.date);
+      updateData.date = newDate;
+      updateData.dayOfWeek = dayNames[newDate.getDay()];
+    }
+
+    await p.visit.update({
+      where: { id: visitId },
+      data: updateData
+    });
+
+    await p.log.create({
+      data: { action: "EDIT_VISIT", details: `تم تعديل الزيارة رقم ${visitId}` }
+    });
+
+    revalidatePath("/schedule");
+    revalidatePath("/my-schedule");
+    revalidatePath("/");
+  } catch (e) {}
+}
+
+export async function approveExcuseAction(reportId: number) {
+  try {
+    const report = await p.visitReport.update({
+      where: { id: reportId },
+      data: { excuseStatus: "APPROVED" }
+    });
+    // Ensure visit status is EXCUSED
+    await p.visit.update({
+      where: { id: report.visitId },
+      data: { status: "EXCUSED" }
+    });
+    await p.log.create({
+      data: { action: "APPROVE_EXCUSE", details: `تمت الموافقة على اعتذار الموجه رقم ${report.supervisorId}` }
+    });
+    revalidatePath("/reports");
+    revalidatePath("/schedule");
+  } catch (e) {}
+}
+
+export async function rejectExcuseAction(reportId: number) {
+  try {
+    const report = await p.visitReport.update({
+      where: { id: reportId },
+      data: { excuseStatus: "REJECTED" }
+    });
+    // If rejected, maybe it should revert to MISSED or PENDING? 
+    // Usually rejected means they didn't have a valid reason, so MISSED is appropriate.
+    await p.visit.update({
+      where: { id: report.visitId },
+      data: { status: "MISSED" }
+    });
+    await p.log.create({
+      data: { action: "REJECT_EXCUSE", details: `تم رفض اعتذار الموجه رقم ${report.supervisorId}` }
+    });
+    revalidatePath("/reports");
+    revalidatePath("/schedule");
+  } catch (e) {}
+}
+
+

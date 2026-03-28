@@ -43,6 +43,29 @@ export default async function SubmitReportPage({ params }: { params: Promise<{ i
             ></textarea>
           </div>
 
+          <div id="excuseExtraFields" style={{ border: "1px dashed var(--accent-gold)", padding: "1rem", borderRadius: "8px", background: "#fffdf5" }}>
+            <h4 style={{ margin: "0 0 1rem 0", color: "var(--primary-deep-blue)" }}>⚠️ بيانات الاعتذار الإضافية:</h4>
+            
+            <div style={{ marginBottom: "1rem" }}>
+              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold" }}>سبب الاعتذار:</label>
+              <textarea 
+                name="excuseReason" 
+                placeholder="اذكر سبب الاعتذار بالتفصيل..."
+                style={{ width: "100%", height: "80px", padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border)", fontFamily: "inherit" }}
+              ></textarea>
+            </div>
+
+            <div>
+              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold" }}>اسم البديل القائم بالزيارة (إلزامي في حالة الاعتذار):</label>
+              <input 
+                type="text" 
+                name="replacementName" 
+                placeholder="أدخل اسم الزميل البديل..."
+                style={{ width: "100%", padding: "0.7rem", borderRadius: "6px", border: "1px solid var(--border)", fontFamily: "inherit" }} 
+              />
+            </div>
+          </div>
+
           <button type="submit" className="btn-primary" style={{ padding: "1rem", fontSize: "1.1rem" }}>
             إرسال التقرير الآن
           </button>

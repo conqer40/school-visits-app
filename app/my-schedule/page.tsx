@@ -3,6 +3,7 @@ import { getSession, egyptDate } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import CheckInButton from "@/app/components/CheckInButton";
+import { addManualVisitAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,11 @@ export default async function MySchedulePage() {
     where: { supervisorId: user.supervisorId! },
     include: { school: true },
     orderBy: { date: "asc" },
+  });
+
+  const allSchools = await prisma.school.findMany({
+    where: { status: "ACTIVE" },
+    orderBy: { name: "asc" }
   });
 
   const todayEgy = egyptDate(new Date());
@@ -68,6 +74,27 @@ export default async function MySchedulePage() {
       </div>
 
       <div style={{ display: "grid", gap: "2rem" }}>
+        {/* Manual Visit Request Card */}
+        <section className="card" style={{ borderRight: "4px solid var(--primary-deep-blue)" }}>
+          <h2 style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>➕ إضافة زيارة يدوية (تطلب موافقة الأدمن)</h2>
+          <form action={addManualVisitAction} style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "flex-end" }}>
+            <div style={{ flex: 1, minWidth: "200px" }}>
+              <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: "#666" }}>اختر المدرسة:</label>
+              <select name="schoolId" required style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--border)" }}>
+                <option value="">-- اختر مدرسة --</option>
+                {allSchools.map(s => (
+                  <option key={s.id} value={s.id}>{s.name} ({s.levels})</option>
+                ))}
+              </select>
+            </div>
+            <div style={{ width: "160px" }}>
+              <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: "#666" }}>التاريخ:</label>
+              <input type="date" name="date" required style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--border)" }} />
+            </div>
+            <button type="submit" className="btn-primary" style={{ padding: "0.7rem 1.5rem" }}>إرسال الطلب</button>
+          </form>
+        </section>
+
         {/* Today's Visits Section */}
         <section className="card" style={{ borderRight: "4px solid var(--accent-gold)" }}>
           <h2 style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>🗓️ زيارات اليوم ({egyptDate(new Date())})</h2>
@@ -128,6 +155,11 @@ export default async function MySchedulePage() {
                       }}>
                         {visit.status === "PENDING" ? "انتظار" : visit.status === "COMPLETED" ? "تمت" : "اعتذار"}
                       </span>
+                      {visit.isManual && (
+                        <div style={{ fontSize: "0.7rem", marginTop: "5px", color: visit.adminApproval === "PENDING" ? "var(--accent-gold)" : visit.adminApproval === "APPROVED" ? "var(--success)" : "var(--danger)" }}>
+                          {visit.adminApproval === "PENDING" ? "⏳ في انتظار الموافقة" : visit.adminApproval === "APPROVED" ? "✅ تمت الموافقة" : "❌ مرفوض"}
+                        </div>
+                      )}
                     </td>
                     <td style={{ padding: "1rem" }}>
                       {visit.status === "PENDING" && (

@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { generateScheduleAction, updateVisitStatusAction, clearPendingScheduleAction } from "./actions";
 import Link from "next/link";
 import ViewReportModal from "@/app/components/ViewReportModal";
+import VisitAdminActions from "@/app/components/VisitAdminActions";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,9 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
     },
     orderBy: { date: "asc" },
   });
+
+  const allSchools = await prisma.school.findMany({ where: { status: "ACTIVE" }, orderBy: { name: "asc" } });
+  const allSupervisors = await prisma.supervisor.findMany({ where: { isActive: true }, orderBy: { name: "asc" } });
 
   return (
     <div>
@@ -141,6 +145,13 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
                   >
                     {visit.status === "PENDING" ? "معلقة" : visit.status === "COMPLETED" ? "مكتملة" : "ملغية"}
                   </span>
+                  {visit.isManual && (
+                    <div style={{ marginTop: "5.4px" }}>
+                      <span style={{ fontSize: "0.7rem", padding: "2px 6px", borderRadius: "10px", background: visit.adminApproval === "PENDING" ? "#fef3c7" : visit.adminApproval === "APPROVED" ? "#dcfce7" : "#fee2e2", color: visit.adminApproval === "PENDING" ? "#92400e" : visit.adminApproval === "APPROVED" ? "#166534" : "#991b1b", border: "1px solid currentColor" }}>
+                         {visit.adminApproval === "PENDING" ? "طلب يدوي - قيد الانتظار" : visit.adminApproval === "APPROVED" ? "طلب يدوي - مقبول" : "طلب يدوي - مرفوض"}
+                      </span>
+                    </div>
+                  )}
                   {visit.checkInLat && visit.checkInLng && (
                     <div style={{ marginTop: "0.5rem" }}>
                       <a href={`https://maps.google.com/?q=${visit.checkInLat},${visit.checkInLng}`} target="_blank" style={{ fontSize: "0.75rem", color: "var(--primary-deep-blue)", fontWeight: "bold", textDecoration: "none", background: "#eef2f5", padding: "4px 8px", borderRadius: "12px", border: "1px solid var(--border)" }}>
@@ -165,14 +176,20 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
                        date={visit.date.toLocaleDateString("ar-EG")}
                     />
                   ) : visit.status === "PENDING" && (
-                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                       <VisitAdminActions 
+                          visit={visit} 
+                          schools={allSchools} 
+                          supervisors={allSupervisors} 
+                       />
+                       
                        <form action={updateVisitStatusAction.bind(null, visit.id, "COMPLETED")}>
-                          <button type="submit" style={{ padding: "0.4rem 0.8rem", background: "var(--success)", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontFamily: "inherit" }}>
+                          <button type="submit" style={{ padding: "0.4rem 0.8rem", background: "var(--success)", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontFamily: "inherit", fontSize: "0.8rem" }}>
                             إنجاز
                           </button>
                        </form>
                        <form action={updateVisitStatusAction.bind(null, visit.id, "MISSED")}>
-                          <button type="submit" style={{ padding: "0.4rem 0.8rem", background: "var(--danger)", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontFamily: "inherit" }}>
+                          <button type="submit" style={{ padding: "0.4rem 0.8rem", background: "var(--danger)", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontFamily: "inherit", fontSize: "0.8rem" }}>
                             إلغاء
                           </button>
                        </form>
