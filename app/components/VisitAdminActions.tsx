@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { approveManualVisitAction, rejectManualVisitAction, editVisitAction } from "@/app/schedule/actions";
+import { approveManualVisitAction, rejectManualVisitAction, editVisitAction, deleteVisitAction } from "@/app/schedule/actions";
 
 export default function VisitAdminActions({ visit, schools, supervisors }: any) {
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -56,6 +56,22 @@ export default function VisitAdminActions({ visit, schools, supervisors }: any) 
         style={{ padding: "0.4rem 0.8rem", background: "#f3f4f6", color: "#374151", border: "1px solid #d1d5db", borderRadius: "4px", cursor: "pointer", fontSize: "0.8rem" }}
       >
         ✏️ تعديل
+      </button>
+
+      {/* Delete Button */}
+      <button 
+        onClick={async () => {
+          if (confirm("⚠️ هل أنت متأكد من رغبتك في حذف هذه الزيارة نهائياً؟")) {
+             try {
+               await deleteVisitAction(visit.id);
+             } catch (e) {
+               alert("❌ فشل الحذف.");
+             }
+          }
+        }}
+        style={{ padding: "0.4rem 0.8rem", background: "white", color: "var(--danger)", border: "1px solid var(--danger)", borderRadius: "4px", cursor: "pointer", fontSize: "0.8rem" }}
+      >
+        🗑️ حذف
       </button>
 
       {/* Rejection Modal */}

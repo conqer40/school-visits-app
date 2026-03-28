@@ -376,6 +376,26 @@ export async function checkDuplicateVisitAction(schoolId: number, dateStr: strin
   }
 }
 
+export async function deleteVisitAction(visitId: number) {
+  try {
+    await p.visit.delete({
+      where: { id: visitId }
+    });
+    
+    await p.log.create({
+      data: { action: "DELETE_VISIT", details: `تم حذف الزيارة رقم ${visitId}` }
+    });
+
+    revalidatePath("/schedule");
+    revalidatePath("/my-schedule");
+    revalidatePath("/");
+  } catch (e: any) {
+    console.error("Delete Visit Error:", e.message);
+    throw e;
+  }
+}
+
+
 
 
 
