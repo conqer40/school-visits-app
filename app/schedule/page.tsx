@@ -132,8 +132,21 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
                   {visit.date.toLocaleDateString("ar-EG")}
                 </td>
                 <td style={{ padding: "1rem" }}>{visit.dayOfWeek}</td>
-                <td style={{ padding: "1rem", color: "var(--primary-deep-blue)", fontWeight: "bold" }}>
-                  {visit.school.name}
+                <td style={{ padding: "1rem" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <span style={{ color: "var(--primary-deep-blue)", fontWeight: "bold" }}>{visit.school.name}</span>
+                    {visit.school.googleMapsUrl && (
+                      <a 
+                        href={visit.school.googleMapsUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        title="عرض الموقع على الخريطة"
+                        style={{ textDecoration: "none", fontSize: "1.1rem" }}
+                      >
+                        📍
+                      </a>
+                    )}
+                  </div>
                 </td>
                 <td style={{ padding: "1rem" }}>
                   {visit.supervisor.name}

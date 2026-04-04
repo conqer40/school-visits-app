@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل نظام إدارة الزيارات المدرسية - نسخة البروشور الفاخرة</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-dark: #1e293b;
+            --secondary: #d4af37; /* Gold tone */
+            --bg: #f3f4f6;
+            --white: #ffffff;
+            --text: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg);
+            padding: 2.5rem;
+        }
+
+        /* Container for A4 pages */
+        .pdf-container {
+            width: 210mm;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Individual A4 Page */
+        .page {
+            width: 210mm;
+            height: 297mm;
+            padding: 0;
+            background: var(--white);
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            page-break-after: always;
+        }
+
+        /* --- Page 1: Cover --- */
+        .page-cover {
+            background: linear-gradient(rgba(30, 58, 138, 0.9), rgba(30, 58, 138, 0.7)), url('brochure_cover_1775251572230.png');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .cover-border {
+            border: 8px solid var(--secondary);
+            width: 90%;
+            height: 90%;
+            position: absolute;
+            top: 5%;
+            left: 5%;
+            pointer-events: none;
+        }
+
+        .page-cover h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+            color: var(--secondary);
+        }
+
+        .page-cover h2 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+
+        .page-cover .dept {
+            background: rgba(255,255,255,0.1);
+            padding: 0.5rem 2rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* --- Internal Page Layout --- */
+        .page-header {
+            background: var(--primary);
+            color: white;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h3 {
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .content {
+            padding: 3rem;
+        }
+
+        .section-title {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid var(--secondary);
+            display: inline-block;
+            padding-bottom: 0.5rem;
+        }
+
+        .text-block {
+            font-size: 1.15rem;
+            color: var(--text);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            text-align: justify;
+        }
+
+        /* Features List */
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .feature-item {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-right: 5px solid var(--primary);
+            border-radius: 8px;
+        }
+
+        .feature-item i {
+            color: var(--secondary);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-item h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-weight: 900;
+        }
+
+        /* --- Footer --- */
+        .page-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 1rem 3rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            color: #94a3b8;
+        }
+
+        /* Control Button Overlay */
+        #export-btn {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            background: var(--secondary);
+            color: var(--primary);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 900;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        #export-btn:hover {
+            transform: scale(1.05);
+            background: #e5c040;
+        }
+
+        @media print {
+            body { background: none; padding: 0; }
+            #export-btn { display: none; }
+            .page { margin-bottom: 0; box-shadow: none; border: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <button id="export-btn" onclick="exportPDF()">
+        <i class="fas fa-file-pdf"></i> تحميل البروشور كـ PDF
+    </button>
+
+    <div class="pdf-container" id="pdf-content">
+        
+        <!-- Page 1: COVER -->
+        <div class="page page-cover">
+            <div class="cover-border"></div>
+            <div class="dept">إدارة غرب الزقازيق التعليمية</div>
+            <div style="margin: 4rem 0;">
+                <h1 style="font-family: 'Amiri', serif;">نظام الزيارات الرقمي</h1>
+                <h2>دليل المستخدم والمسؤول - نسخة 2026</h2>
+            </div>
+            <div style="font-weight: 700; opacity: 0.9; letter-spacing: 2px;">التحول الرقمي في الإشراف التربوي</div>
+        </div>
+
+        <!-- Page 2: INTRODUCTION & OVERVIEW -->
+        <div class="page">
+            <div class="page-header">
+                <h3>دليل النظام الرقمي</h3>
+                <span style="opacity: 0.7;">صفحة 02</span>
+            </div>
+            <div class="content">
+                <h2 class="section-title">نبذة عن البرنامج</h2>
+                <div class="text-block">
+                    يمثل نظام إدارة الزيارات المدرسية نقلة نوعية في رقمنة العمليات الإدارية والمتابعة الميدانية. تم تطوير النظام لخدمة إدارات التوجيه والاشراف، بهدف تحقيق أعلى مستويات الكفاءة والشفافية في توزيع ومتابعة زيارات الموجهين لمدارس إدارة "غرب الزقازيق التعليمية".
+                </div>
+                <div style="text-align: center; margin: 2rem 0;">
+                    <img src="features_graphic_1775252687674.png" alt="Features Illustration" style="width: 80%; border-radius: 12px;">
+                </div>
+                <h2 class="section-title">الأهداف الاستراتيجية</h2>
+                <div class="features">
+                    <div class="feature-item">
+                        <i class="fas fa-bullseye"></i>
+                        <h4>الدقة في التوجيه</h4>
+                        <p>ضمان وصول الموجه المناسب للمدرسة المناسبة بناءً على تخصصات دقيقة.</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-users-viewfinder"></i>
+                        <h4>متابعة فورية</h4>
+                        <p>رصد الزيارات الميدانية بشكل لحظي من قبل الإدارة المركزية.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="page-footer">
+                <span>إدارة غرب الزقازيق التعليمية</span>
+                <span>دليل الاستخدام والتشغيل</span>
+            </div>
+        </div>
+
+        <!-- Page 3: SYSTEM FEATURES -->
+        <div class="page">
+            <div class="page-header">
+                <h3>المميزات التقنية</h3>
+                <span style="opacity: 0.7;">صفحة 03</span>
+            </div>
+            <div class="content">
+                <h2 class="section-title">أهم المميزات</h2>
+                <div class="text-block">
+                    يتمتع النظام بمجموعة من الخصائص التقنية التي تمنحه الريادة في مجال المتابعة المدرسية الذكية:
+                </div>
+                <div class="features" style="grid-template-columns: 1fr;">
+                    <div class="feature-item" style="display: flex; align-items: center; gap: 1.5rem;">
+                        <i class="fas fa-calendar-check" style="font-size: 2.5rem;"></i>
+                        <div>
+                            <h4>الجدولة الآلية الذكية</h4>
+                            <p>خوارزمية ذكية تتولى توزيع المراجعات بشكل عادل وتلقائي، مع مراعاة أيام العمل الرسمية والتخصصات المحددة.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item" style="display: flex; align-items: center; gap: 1.5rem; margin-top: 1rem;">
+                        <i class="fas fa-map-location-dot" style="font-size: 2.5rem;"></i>
+                        <div>
+                            <h4>نظام التحقق الجغرافي (GPS)</h4>
+                            <p>خاصية "تسجيل الحضور" تضمن تواجد الموجه فعلياً داخل نطاق المدرسة الجغرافي لتوثيق الزيارة بنجاح.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item" style="display: flex; align-items: center; gap: 1.5rem; margin-top: 1rem;">
+                        <i class="fas fa-file-invoice" style="font-size: 2.5rem;"></i>
+                        <div>
+                            <h4>التقارير الديناميكية</h4>
+                            <p>إمكانية إرسال التقارير الفنية والاعتذارات رقمياً مع دعم كامل للمرفقات والصور من موقع العمل.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="page-footer">
+                <span>إدارة غرب الزقازيق التعليمية</span>
+                <span>دليل الاستخدام والتشغيل</span>
+            </div>
+        </div>
+
+        <!-- Page 4: ANALYTICS & CLOSING -->
+        <div class="page">
+            <div class="page-header">
+                <h3>الإحصائيات والختام</h3>
+                <span style="opacity: 0.7;">صفحة 04</span>
+            </div>
+            <div class="content">
+                <h2 class="section-title">لوحة تحكم الإدارة</h2>
+                <div class="text-block">
+                    توفر لوحة التحكم لمدير التوجيه أدوات تحليلية قوية تشمل:
+                </div>
+                <ul style="margin-right: 2rem; color: var(--text); line-height: 2;">
+                    <li>متابعة نسب إنجاز الزيارات الشهرية لكل تخصص.</li>
+                    <li>إدارة بيانات المدارس والموجهين والتحكم في نشاط الحسابات.</li>
+                    <li>أرشفة رقمية كاملة لكافة الزيارات والتقارير عبر السنين.</li>
+                    <li>نظام تنبيهات ذكي للزيارات المتأخرة أو الملغاة.</li>
+                </ul>
+                <div style="margin-top: 4rem; border: 4px double var(--secondary); padding: 2rem; text-align: center; border-radius: 20px; background: #fffcf0;">
+                    <h3 style="color: var(--primary); margin-bottom: 1rem;">نحو مستقبل تعليمي رقمي</h3>
+                    <p style="color: var(--text); font-weight: 600;">إن هذا النظام هو الخطوة الأولى في رحلة التحول الرقمي الشامل التي تخوضها الإدارة لضمان جودة التعليم ومتابعة الأداء بأفضل الوسائل التكنولوجية المتاحة.</p>
+                </div>
+            </div>
+            <div class="page-footer">
+                <span>تصميم وتطوير: م. محمد الحاوي</span>
+                <span>نسخة 2026 - الإصدار 1.0</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function exportPDF() {
+            const element = document.getElementById('pdf-content');
+            const opt = {
+                margin: 0,
+                filename: 'DALEEL_SYSTEM_PRM.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            // New Promise-based usage:
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>

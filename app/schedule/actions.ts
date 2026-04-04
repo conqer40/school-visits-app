@@ -20,6 +20,17 @@ function getWorkingDays(year: number, month: number): Date[] {
   return days;
 }
 
+function normalizeString(str: string): string {
+  if (!str) return "";
+  return str
+    .trim()
+    .replace(/[أإآ]/g, "ا")
+    .replace(/ى/g, "ي")
+    .replace(/ة/g, "ه")
+    .replace(/\s+/g, " ");
+}
+
+
 
 /**
  * الخوارزمية v5.2:
@@ -55,8 +66,8 @@ export async function generateScheduleAction(formData?: FormData) {
     const month = today.getMonth();
     const workingDays = getWorkingDays(year, month);
 
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
+    const firstDay = new Date(year, month, 1, 0, 0, 0, 0);
+    const lastDay = new Date(year, month + 1, 0, 23, 59, 59, 999);
 
     // Get all existing visits for this month //
     const existingVisits = await p.visit.findMany({
@@ -77,14 +88,16 @@ export async function generateScheduleAction(formData?: FormData) {
 
     // Step 1: Pre-calculate compatible schools for each supervisor
     const compatibleSchoolsMap = new Map<number, number[]>();
+    let compatibilityLogged = false;
+
     for (const sup of supervisors) {
-      const supLevels = (sup.levels || "").split(",").filter(Boolean);
-      const supTypes = (sup.types || "").split(",").filter(Boolean);
+      const supLevels = (sup.levels || "").split(",").map(normalizeString).filter(Boolean);
+      const supTypes = (sup.types || "").split(",").map(normalizeString).filter(Boolean);
       
       const compSchools = [];
       for (const school of schools) {
-        const schLevels = (school.levels || "").split(",").filter(Boolean);
-        const schTypes = (school.types || "").split(",").filter(Boolean);
+        const schLevels = (school.levels || "").split(",").map(normalizeString).filter(Boolean);
+        const schTypes = (school.types || "").split(",").map(normalizeString).filter(Boolean);
 
         const hasCommonLevel = supLevels.some((l: string) => schLevels.includes(l));
         const hasCommonType = supTypes.some((t: string) => schTypes.includes(t));
@@ -95,6 +108,7 @@ export async function generateScheduleAction(formData?: FormData) {
       }
       compatibleSchoolsMap.set(sup.id, compSchools);
     }
+
 
     const newVisits: any[] = [];
 
@@ -164,14 +178,23 @@ export async function generateScheduleAction(formData?: FormData) {
       await p.log.create({
         data: {
           action: "GENERATE_SCHEDULE",
-          details: `تم إنشاء ${newVisits.length} زيارة ذكية بشروط المرحلة، النوع وأيام عمل المدرسة`,
+          details: `تم بنجاح! إنشاء ${newVisits.length} زيارة ذكية لهذا الشهر مع مراعاة المراحل والأنواع وأيام العمل.`,
         },
       });
     } else {
+      const totalComp = Array.from(compatibleSchoolsMap.values()).reduce((acc, curr) => acc + curr.length, 0);
+      let reason = "لا توجد زيارات صالحة للجدولة.";
+      if (totalComp === 0) {
+        reason = "فشل التوافق: لم يتم العثور على مدرسة واحدة تتوافق مع تخصصات الموجهين (راجع المراحل والأنواع).";
+      } else if (existingVisits.length > 0) {
+        reason = "الجدول ممتلئ بالفعل لهذا الشهر أو تم استهلاك جميع الاحتمالات المتاحة.";
+      }
+      
       await p.log.create({
-        data: { action: "GENERATE_SCHEDULE", details: "لم يتم العثور على زيارات صالحة للجدولة (الجدول ممتلئ أو لا يوجد توافق)" },
+        data: { action: "GENERATE_SCHEDULE", details: reason },
       });
     }
+
 
     revalidatePath("/schedule");
     revalidatePath("/");
@@ -202,18 +225,29 @@ export async function updateVisitStatusAction(visitId: number, status: string) {
 export async function clearPendingScheduleAction() {
   try {
     const today = new Date();
-    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    // Ensure we cover the full range of the current month
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0, 0);
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999);
 
-    await p.visit.deleteMany({
+    const deleted = await p.visit.deleteMany({
       where: { status: "PENDING", date: { gte: firstDay, lte: lastDay } },
     });
+    
     await p.log.create({
-      data: { action: "CLEAR_SCHEDULE", details: "تم مسح جدول الزيارات المعلقة للشهر الحالي" },
+      data: { 
+        action: "CLEAR_SCHEDULE", 
+        details: `تم مسح ${deleted.count} زيارة معلقة للمن شهر الحالي (${today.getMonth() + 1}/${today.getFullYear()})` 
+      },
     });
+    
     revalidatePath("/schedule");
     revalidatePath("/");
-  } catch (e: any) {}
+  } catch (e: any) {
+    console.error("Clear Pending Schedule Error:", e.message);
+    await p.log.create({
+      data: { action: "CLEAR_SCHEDULE_ERROR", details: `فشل مسح الزيارات: ${e.message}` }
+    });
+  }
 }
 
 export async function approveManualVisitAction(visitId: number) {
