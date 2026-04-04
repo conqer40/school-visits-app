@@ -42,7 +42,14 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
         <h1 style={{ color: "var(--primary-deep-blue)", margin: 0 }}>📅 الجدول الشهري المعتمد</h1>
         
         <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-          <form action={clearPendingScheduleAction}>
+          <form 
+            action={clearPendingScheduleAction}
+            onSubmit={(e) => {
+              if (!confirm("هل أنت متأكد من مسح جميع الزيارات المعلقة لهذا الشهر؟ لا يمكن التراجع عن هذه الخطوة.")) {
+                e.preventDefault();
+              }
+            }}
+          >
             <button
               type="submit"
               className="btn-primary"
