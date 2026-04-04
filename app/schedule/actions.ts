@@ -435,6 +435,26 @@ export async function deleteVisitAction(visitId: number) {
   }
 }
 
+export async function bulkDeleteVisitsAction(visitIds: number[]) {
+  try {
+    const deleted = await p.visit.deleteMany({
+      where: { id: { in: (visitIds as any).map((id: any) => parseInt(id)) } }
+    });
+    
+    await p.log.create({
+      data: { action: "BULK_DELETE_VISITS", details: `تم حذف ${deleted.count} زيارة بشكل جماعي.` }
+    });
+
+    revalidatePath("/schedule");
+    revalidatePath("/my-schedule");
+    revalidatePath("/");
+    return { success: true, count: deleted.count };
+  } catch (e: any) {
+    console.error("Bulk Delete Visits Error:", e.message);
+    return { error: e.message || "حدث خطأ أثناء الحذف الجماعي" };
+  }
+}
+
 
 
 
