@@ -1,10 +1,9 @@
 import { prisma } from "@/lib/prisma";
-import { generateScheduleAction, updateVisitStatusAction, clearPendingScheduleAction, adminAddManualVisitAction } from "./actions";
+import { generateScheduleAction } from "./actions";
 import Link from "next/link";
-import ViewReportModal from "@/app/components/ViewReportModal";
-import VisitAdminActions from "@/app/components/VisitAdminActions";
 import AdminManualVisitForm from "@/app/components/AdminManualVisitForm";
 import VisitBulkTable from "@/app/components/VisitBulkTable";
+import ClearPendingScheduleForm from "@/app/components/ClearPendingScheduleForm";
 
 export const dynamic = "force-dynamic";
 
@@ -39,28 +38,16 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
   const allSchools = await prisma.school.findMany({ where: { status: "ACTIVE" }, orderBy: { name: "asc" } });
   const allSupervisors = await prisma.supervisor.findMany({ where: { isActive: true }, orderBy: { name: "asc" } });
 
+  const serializedSchools = JSON.parse(JSON.stringify(allSchools));
+  const serializedSupervisors = JSON.parse(JSON.stringify(allSupervisors));
+
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "1rem" }}>
         <h1 style={{ color: "var(--primary-deep-blue)", margin: 0 }}>📅 الجدول الشهري المعتمد</h1>
         
         <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-          <form 
-            action={clearPendingScheduleAction}
-            onSubmit={(e) => {
-              if (!confirm("هل أنت متأكد من مسح جميع الزيارات المعلقة لهذا الشهر؟ لا يمكن التراجع عن هذه الخطوة.")) {
-                e.preventDefault();
-              }
-            }}
-          >
-            <button
-              type="submit"
-              className="btn-primary"
-              style={{ background: "transparent", border: "2px solid var(--danger)", color: "var(--danger)" }}
-            >
-              مسح المعلق
-            </button>
-          </form>
+          <ClearPendingScheduleForm />
           
           <form action={generateScheduleAction}>
             <button type="submit" className="btn-primary">
@@ -71,8 +58,8 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
       </div>
 
       <AdminManualVisitForm 
-        schools={allSchools} 
-        supervisors={allSupervisors} 
+        schools={serializedSchools} 
+        supervisors={serializedSupervisors} 
       />
 
       <div className="card" style={{ marginBottom: "1.5rem" }}>
@@ -94,11 +81,24 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
         </form>
       </div>
 
-      <VisitBulkTable 
-        visits={serializedVisits} 
-        allSchools={allSchools} 
-        allSupervisors={allSupervisors} 
-      />
+      {serializedVisits.length === 0 ? (
+        <div className="card" style={{ padding: "3rem", textAlign: "center", color: "var(--border-dark)" }}>
+          {(!day && !school && !supervisor && !exactDate) ? (
+            <>
+              <p style={{ fontSize: "1.2rem", fontWeight: "bold" }}>الجدول فارغ</p>
+              <p>اضغط على "توليد جدول ذكي" لتوزيع المدارس على الموجهين تلقائياً</p>
+            </>
+          ) : (
+            <p style={{ fontWeight: "bold", color: "var(--danger)" }}>لا توجد زيارات مطابقة للبحث!</p>
+          )}
+        </div>
+      ) : (
+        <VisitBulkTable 
+          visits={serializedVisits} 
+          allSchools={serializedSchools} 
+          allSupervisors={serializedSupervisors} 
+        />
+      )}
     </div>
   );
 }

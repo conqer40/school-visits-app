@@ -183,16 +183,24 @@ export default function VisitBulkTable({ visits, allSchools, allSupervisors }: V
                         supervisors={allSupervisors} 
                      />
                      
-                     <form action={updateVisitStatusAction.bind(null, visit.id, "COMPLETED")}>
-                        <button type="submit" style={{ padding: "0.4rem 0.8rem", background: "var(--success)", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontFamily: "inherit", fontSize: "0.8rem" }}>
-                          إنجاز
-                        </button>
-                     </form>
-                     <form action={updateVisitStatusAction.bind(null, visit.id, "MISSED")}>
-                        <button type="submit" style={{ padding: "0.4rem 0.8rem", background: "var(--danger)", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontFamily: "inherit", fontSize: "0.8rem" }}>
-                          إلغاء
-                        </button>
-                     </form>
+                     <button 
+                        onClick={async () => { 
+                          await updateVisitStatusAction(visit.id, "COMPLETED"); 
+                          router.refresh(); 
+                        }}
+                        style={{ padding: "0.4rem 0.8rem", background: "var(--success)", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontFamily: "inherit", fontSize: "0.8rem" }}
+                     >
+                       إنجاز
+                     </button>
+                     <button 
+                        onClick={async () => { 
+                          await updateVisitStatusAction(visit.id, "MISSED"); 
+                          router.refresh(); 
+                        }}
+                        style={{ padding: "0.4rem 0.8rem", background: "var(--danger)", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontFamily: "inherit", fontSize: "0.8rem" }}
+                     >
+                       إلغاء
+                     </button>
                   </div>
                 )}
               </td>
