@@ -450,8 +450,15 @@ export async function deleteVisitAction(visitId: number) {
 
 export async function bulkDeleteVisitsAction(visitIds: number[]) {
   try {
+    const parsedIds = (visitIds as any).map((id: any) => parseInt(id));
+    
+    // Delete related reports first to avoid foreign key constraint
+    await p.visitReport.deleteMany({
+      where: { visitId: { in: parsedIds } }
+    });
+
     const deleted = await p.visit.deleteMany({
-      where: { id: { in: (visitIds as any).map((id: any) => parseInt(id)) } }
+      where: { id: { in: parsedIds } }
     });
     
     await p.log.create({
