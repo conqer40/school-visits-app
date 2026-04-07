@@ -8,7 +8,7 @@ export default function ClearPendingScheduleForm() {
     <form 
       action={clearPendingScheduleAction}
       onSubmit={(e) => {
-        if (!confirm("هل أنت متأكد من مسح جميع الزيارات المعلقة لهذا الشهر؟ لا يمكن التراجع عن هذه الخطوة.")) {
+        if (!confirm("⚠️ تحذير: هل أنت متأكد من مسح الجدول الشهري كاملاً؟\n\nسيتم حذف جميع الزيارات (المعلقة والمكتملة والملغية) لهذا الشهر.\n\nلا يمكن التراجع عن هذه الخطوة.")) {
           e.preventDefault();
         }
       }}
@@ -18,7 +18,7 @@ export default function ClearPendingScheduleForm() {
         className="btn-primary"
         style={{ background: "transparent", border: "2px solid var(--danger)", color: "var(--danger)" }}
       >
-        مسح المعلق
+        🗑️ مسح الجدول كاملاً
       </button>
     </form>
   );

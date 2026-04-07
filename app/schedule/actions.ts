@@ -229,23 +229,36 @@ export async function clearPendingScheduleAction() {
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0, 0);
     const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999);
 
+    // First delete related reports for visits in this month
+    const visitsThisMonth = await p.visit.findMany({
+      where: { date: { gte: firstDay, lte: lastDay } },
+      select: { id: true }
+    });
+    const visitIds = visitsThisMonth.map((v: any) => v.id);
+    
+    if (visitIds.length > 0) {
+      await p.visitReport.deleteMany({
+        where: { visitId: { in: visitIds } }
+      });
+    }
+
     const deleted = await p.visit.deleteMany({
-      where: { status: "PENDING", date: { gte: firstDay, lte: lastDay } },
+      where: { date: { gte: firstDay, lte: lastDay } },
     });
     
     await p.log.create({
       data: { 
         action: "CLEAR_SCHEDULE", 
-        details: `تم مسح ${deleted.count} زيارة معلقة للمن شهر الحالي (${today.getMonth() + 1}/${today.getFullYear()})` 
+        details: `تم مسح الجدول الشهري كاملاً: ${deleted.count} زيارة للشهر (${today.getMonth() + 1}/${today.getFullYear()})` 
       },
     });
     
     revalidatePath("/schedule");
     revalidatePath("/");
   } catch (e: any) {
-    console.error("Clear Pending Schedule Error:", e.message);
+    console.error("Clear Schedule Error:", e.message);
     await p.log.create({
-      data: { action: "CLEAR_SCHEDULE_ERROR", details: `فشل مسح الزيارات: ${e.message}` }
+      data: { action: "CLEAR_SCHEDULE_ERROR", details: `فشل مسح الجدول: ${e.message}` }
     });
   }
 }
