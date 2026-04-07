@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { approveManualVisitAction, rejectManualVisitAction, editVisitAction, deleteVisitAction } from "@/app/schedule/actions";
+import SearchableSelect from "./SearchableSelect";
 
 export default function VisitAdminActions({ visit, schools, supervisors }: any) {
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -109,15 +110,21 @@ export default function VisitAdminActions({ visit, schools, supervisors }: any) 
             <form action={handleEdit} style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
               <div>
                 <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.9rem" }}>المدرسة:</label>
-                <select name="schoolId" defaultValue={visit.schoolId} style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #ccc" }}>
-                  {schools.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
-                </select>
+                <SearchableSelect
+                  name="schoolId"
+                  defaultValue={String(visit.schoolId)}
+                  options={schools.map((s: any) => ({ value: String(s.id), label: s.name }))}
+                  style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #ccc" }}
+                />
               </div>
               <div>
                 <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.9rem" }}>الموجه:</label>
-                <select name="supervisorId" defaultValue={visit.supervisorId} style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #ccc" }}>
-                  {supervisors.map((sup: any) => <option key={sup.id} value={sup.id}>{sup.name}</option>)}
-                </select>
+                <SearchableSelect
+                  name="supervisorId"
+                  defaultValue={String(visit.supervisorId)}
+                  options={supervisors.map((sup: any) => ({ value: String(sup.id), label: sup.name }))}
+                  style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #ccc" }}
+                />
               </div>
               <div>
                 <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.9rem" }}>التاريخ:</label>

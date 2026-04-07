@@ -4,6 +4,7 @@ import Link from "next/link";
 import AdminManualVisitForm from "@/app/components/AdminManualVisitForm";
 import VisitBulkTable from "@/app/components/VisitBulkTable";
 import ClearPendingScheduleForm from "@/app/components/ClearPendingScheduleForm";
+import SearchableSelect from "@/app/components/SearchableSelect";
 
 export const dynamic = "force-dynamic";
 
@@ -72,13 +73,20 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
               <option key={d} value={d}>{d}</option>
             ))}
           </select>
-          <input type="text" name="school" defaultValue={school || ""} placeholder="بحث باسم المدرسة..." style={{ flex: 1, minWidth: "140px", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--border)", fontFamily: "inherit" }} />
-          <select name="supervisor" defaultValue={supervisor || ""} style={{ flex: 1, minWidth: "140px", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--border)", fontFamily: "inherit" }}>
-            <option value="">كل الموجهين</option>
-            {serializedSupervisors.map((sup: any) => (
-              <option key={sup.id} value={sup.id}>{sup.name}</option>
-            ))}
-          </select>
+          <SearchableSelect
+            name="school"
+            defaultValue={school || ""}
+            placeholder="كل المدارس"
+            options={[{ value: "", label: "كل المدارس" }, ...serializedSchools.map((s: any) => ({ value: s.name, label: s.name }))]}
+            style={{ flex: 1, minWidth: "140px", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--border)" }}
+          />
+          <SearchableSelect
+            name="supervisor"
+            defaultValue={supervisor || ""}
+            placeholder="كل الموجهين"
+            options={[{ value: "", label: "كل الموجهين" }, ...serializedSupervisors.map((sup: any) => ({ value: String(sup.id), label: sup.name }))]}
+            style={{ flex: 1, minWidth: "140px", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--border)" }}
+          />
           <button type="submit" className="btn-primary" style={{ padding: "0.6rem 1.2rem" }}>بحث</button>
           <Link href="/schedule" style={{ padding: "0.6rem 1rem", textDecoration: "none", color: "#666", border: "1px solid #ccc", borderRadius: "6px", background: "#f5f5f5" }}>
             مسح الفلاتر

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import SearchableSelect from "@/app/components/SearchableSelect";
 
 export default function BroadcastClient({ 
   initialRecipients, specializations, activeTarget, activeSpec, activeLevel 
@@ -74,31 +75,33 @@ export default function BroadcastClient({
           {activeTarget === "supervisors" && (
             <div>
               <label style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}>التخصص:</label>
-              <select 
-                value={activeSpec || "all"} 
-                onChange={(e) => handleFilterChange("spec", e.target.value)}
+              <SearchableSelect 
+                name="spec"
+                defaultValue={activeSpec || "all"} 
+                onChange={(value) => handleFilterChange("spec", value)}
+                options={[
+                  { value: "all", label: "كل التخصصات" },
+                  ...specializations.map((s: any) => ({ value: String(s.id), label: s.name }))
+                ]}
                 style={{ width: "100%", padding: "0.8rem", borderRadius: "8px", border: "1px solid var(--border)" }}
-              >
-                <option value="all">كل التخصصات</option>
-                {specializations.map((s: any) => (
-                  <option key={s.id} value={s.id}>{s.name}</option>
-                ))}
-              </select>
+              />
             </div>
           )}
 
           <div>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}>المرحلة:</label>
-            <select 
-              value={activeLevel || "all"} 
-              onChange={(e) => handleFilterChange("level", e.target.value)}
+            <SearchableSelect 
+              name="level"
+              defaultValue={activeLevel || "all"} 
+              onChange={(value) => handleFilterChange("level", value)}
+              options={[
+                { value: "all", label: "كل المراحل" },
+                { value: "ابتدائي", label: "ابتدائي" },
+                { value: "إعدادي", label: "إعدادي" },
+                { value: "ثانوي", label: "ثانوي" }
+              ]}
               style={{ width: "100%", padding: "0.8rem", borderRadius: "8px", border: "1px solid var(--border)" }}
-            >
-              <option value="all">كل المراحل</option>
-              <option value="ابتدائي">ابتدائي</option>
-              <option value="إعدادي">إعدادي</option>
-              <option value="ثانوي">ثانوي</option>
-            </select>
+            />
           </div>
         </div>
 

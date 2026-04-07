@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession, egyptDate } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import PrintButton from "@/app/components/PrintButton";
+import SearchableSelect from "@/app/components/SearchableSelect";
 
 export const dynamic = "force-dynamic";
 
@@ -75,33 +76,51 @@ export default async function AdvancedReportsPage({ searchParams }: { searchPara
         <form action="" method="get" className="grid-responsive" style={{ gap: "1.5rem", alignItems: "flex-end", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}>
           <div>
             <label style={{ display: "block", fontSize: "0.9rem", color: "var(--secondary-dark-navy)", marginBottom: "0.5rem", fontWeight: "800" }}>نطاق العرض:</label>
-            <select name="type" defaultValue={type} className="input-field" style={{ width: "100%", padding: "0.8rem", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--background-light)", fontWeight: "600" }}>
-              <option value="daily">تقرير يومي (اليوم فقط)</option>
-              <option value="weekly">تقرير أسبوعي</option>
-              <option value="monthly">خطة شهرية شاملة</option>
-            </select>
+            <SearchableSelect
+              name="type"
+              defaultValue={type}
+              options={[
+                { value: "daily", label: "تقرير يومي (اليوم فقط)" },
+                { value: "weekly", label: "تقرير أسبوعي" },
+                { value: "monthly", label: "خطة شهرية شاملة" }
+              ]}
+              style={{ width: "100%", padding: "0.8rem", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--background-light)", fontWeight: "600" }}
+            />
           </div>
           <div>
             <label style={{ display: "block", fontSize: "0.9rem", color: "var(--secondary-dark-navy)", marginBottom: "0.5rem", fontWeight: "800" }}>الشهر (للخطة الشهرية):</label>
-            <select name="month" defaultValue={selectedMonth} className="input-field" style={{ width: "100%", padding: "0.8rem", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--background-light)", fontWeight: "600" }}>
-              {arabicMonths.map((m: string, i: number) => (
-                <option key={i} value={i}>{m}</option>
-              ))}
-            </select>
+            <SearchableSelect
+              name="month"
+              defaultValue={String(selectedMonth)}
+              options={arabicMonths.map((m: string, i: number) => ({ value: String(i), label: m }))}
+              style={{ width: "100%", padding: "0.8rem", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--background-light)", fontWeight: "600" }}
+            />
           </div>
           <div>
             <label style={{ display: "block", fontSize: "0.9rem", color: "var(--secondary-dark-navy)", marginBottom: "0.5rem", fontWeight: "800" }}>تصفية بموجه محدد:</label>
-            <select name="supervisorId" defaultValue={params.supervisorId || ""} className="input-field" style={{ width: "100%", padding: "0.8rem", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--background-light)", fontWeight: "600" }}>
-              <option value="">جميع الموجهين (عرض الكل)</option>
-              {supervisors.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
+            <SearchableSelect
+              name="supervisorId"
+              defaultValue={params.supervisorId || ""}
+              placeholder="جميع الموجهين (عرض الكل)"
+              options={[
+                { value: "", label: "جميع الموجهين (عرض الكل)" },
+                ...supervisors.map((s: any) => ({ value: String(s.id), label: s.name }))
+              ]}
+              style={{ width: "100%", padding: "0.8rem", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--background-light)", fontWeight: "600" }}
+            />
           </div>
           <div>
             <label style={{ display: "block", fontSize: "0.9rem", color: "var(--secondary-dark-navy)", marginBottom: "0.5rem", fontWeight: "800" }}>تصفية بمدرسة محددة:</label>
-            <select name="schoolId" defaultValue={params.schoolId || ""} className="input-field" style={{ width: "100%", padding: "0.8rem", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--background-light)", fontWeight: "600" }}>
-              <option value="">جميع المدارس (عرض الكل)</option>
-              {schools.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
+            <SearchableSelect
+              name="schoolId"
+              defaultValue={params.schoolId || ""}
+              placeholder="جميع المدارس (عرض الكل)"
+              options={[
+                { value: "", label: "جميع المدارس (عرض الكل)" },
+                ...schools.map((s: any) => ({ value: String(s.id), label: s.name }))
+              ]}
+              style={{ width: "100%", padding: "0.8rem", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--background-light)", fontWeight: "600" }}
+            />
           </div>
           <div>
             <button type="submit" className="btn-primary" style={{ width: "100%", padding: "0.8rem", fontSize: "1.05rem", borderRadius: "10px", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>

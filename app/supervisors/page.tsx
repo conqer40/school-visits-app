@@ -7,6 +7,7 @@ import { addSupervisorAction, editSupervisorAction, deleteSupervisorAction } fro
 import { sendAllCredentialsAction } from "@/app/login/actions";
 import { importSupervisorsCSVAction } from "../admin/import-actions";
 import { toggleChatBanAction } from "@/app/chat/actions";
+import SearchableSelect from "@/app/components/SearchableSelect";
 
 export const dynamic = "force-dynamic";
 
@@ -86,10 +87,13 @@ export default async function SupervisorsPage({ searchParams }: { searchParams: 
             <div>
               <label style={{ display: "block", marginBottom: "0.4rem", fontSize: "0.9rem", fontWeight: "bold" }}>📚 التخصص:</label>
               {specializations.length > 0 ? (
-                <select name="specializationId" defaultValue={supervisorToEdit?.specializationId?.toString() || ""} style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border)", fontFamily: "inherit", background: "white" }}>
-                  <option value="">— اختر التخصص —</option>
-                  {specializations.map((spec: any) => <option key={spec.id} value={spec.id.toString()}>{spec.name}</option>)}
-                </select>
+                <SearchableSelect
+                  name="specializationId"
+                  defaultValue={supervisorToEdit?.specializationId?.toString() || ""}
+                  placeholder="— اختر التخصص —"
+                  options={specializations.map((spec: any) => ({ value: spec.id.toString(), label: spec.name }))}
+                  style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border)", background: "white" }}
+                />
               ) : <div style={{ padding: "0.75rem", background: "#fff3cd", borderRadius: "8px", fontSize: "0.85rem" }}>⚠️ لا توجد تخصصات. <Link href="/specializations" style={{ color: "var(--primary-deep-blue)" }}>أضف تخصصات أولاً</Link></div>}
             </div>
             <div>

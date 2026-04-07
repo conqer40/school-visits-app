@@ -3,6 +3,7 @@ import { getSession, egyptDate } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import CheckInButton from "@/app/components/CheckInButton";
+import SearchableSelect from "@/app/components/SearchableSelect";
 import { addManualVisitAction } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -80,12 +81,13 @@ export default async function MySchedulePage() {
           <form action={addManualVisitAction} style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "flex-end" }}>
             <div style={{ flex: 1, minWidth: "200px" }}>
               <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: "#666" }}>اختر المدرسة:</label>
-              <select name="schoolId" required style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--border)" }}>
-                <option value="">-- اختر مدرسة --</option>
-                {allSchools.map(s => (
-                  <option key={s.id} value={s.id}>{s.name} ({s.levels})</option>
-                ))}
-              </select>
+              <SearchableSelect
+                name="schoolId"
+                required
+                placeholder="-- اختر مدرسة --"
+                options={allSchools.map(s => ({ value: String(s.id), label: `${s.name} (${s.levels})` }))}
+                style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--border)" }}
+              />
             </div>
             <div style={{ width: "160px" }}>
               <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: "#666" }}>التاريخ:</label>

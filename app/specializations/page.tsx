@@ -3,6 +3,7 @@ import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { addSpecializationAction, editSpecializationAction, deleteSpecializationAction } from "./actions";
+import SearchableSelect from "@/app/components/SearchableSelect";
 
 export const dynamic = "force-dynamic";
 
@@ -44,18 +45,19 @@ export default async function SpecializationsPage({ searchParams }: { searchPara
             </div>
             <div>
               <label style={{ display: "block", marginBottom: "0.4rem", fontSize: "0.9rem", fontWeight: "bold" }}>يوم الاجتماع الشهري (اختياري):</label>
-              <select
+              <SearchableSelect
                 name="meetingDay"
                 defaultValue={specToEdit?.meetingDay?.toString() ?? ""}
-                style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border)", fontFamily: "inherit", boxSizing: "border-box", background: "white" }}
-              >
-                <option value="">— لا يوجد يوم اجتماع —</option>
-                <option value="0">الأحد</option>
-                <option value="1">الاثنين</option>
-                <option value="2">الثلاثاء</option>
-                <option value="3">الأربعاء</option>
-                <option value="4">الخميس</option>
-              </select>
+                options={[
+                  { value: "", label: "— لا يوجد يوم اجتماع —" },
+                  { value: "0", label: "الأحد" },
+                  { value: "1", label: "الاثنين" },
+                  { value: "2", label: "الثلاثاء" },
+                  { value: "3", label: "الأربعاء" },
+                  { value: "4", label: "الخميس" }
+                ]}
+                style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border)", background: "white" }}
+              />
               <p style={{ fontSize: "0.75rem", color: "#888", marginTop: "0.3rem" }}>⚠️ الزيارات لن تُجدوَل لهذا التخصص في يوم الاجتماع المحدد</p>
             </div>
             <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { sendChatMessageAction, deleteChatMessageAction, getChatMessagesAction } from "./actions";
+import SearchableSelect from "@/app/components/SearchableSelect";
 
 export default function ChatRoom({ 
   initialMessages, user, isAdmin, specializations, allowedSpecIds, selectedSpecId 
@@ -96,15 +97,15 @@ export default function ChatRoom({
         {(isAdmin || allowedSpecIds.length > 1) ? (
           <div style={{ display: "flex", alignItems: "center", gap: "10px", width: "100%", maxWidth: "400px" }}>
             <label style={{ color: "white", fontWeight: "bold", whiteSpace: "nowrap" }}>تغيير الغرفة:</label>
-            <select 
-              value={selectedSpecId} 
-              onChange={(e) => handleFilterChange(e.target.value)}
-              style={{ padding: "0.5rem", borderRadius: "8px", width: "100%", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", color: "white", fontWeight: "bold" }}
-            >
-              {specializations.filter((s:any) => isAdmin || allowedSpecIds.includes(s.id)).map((s:any) => (
-                <option key={s.id} value={s.id} style={{ color: "black" }}>{s.name}</option>
-              ))}
-            </select>
+            <div style={{ flex: 1, minWidth: "200px" }}>
+              <SearchableSelect 
+                name="selectedSpecId"
+                defaultValue={String(selectedSpecId)} 
+                onChange={(value) => handleFilterChange(value)}
+                options={specializations.filter((s:any) => isAdmin || allowedSpecIds.includes(s.id)).map((s:any) => ({ value: String(s.id), label: s.name }))}
+                style={{ width: "100%", padding: "0.5rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.2)", color: "black", fontWeight: "bold" }}
+              />
+            </div>
           </div>
         ) : (
            <div style={{ color: "var(--accent-gold)", fontWeight: "bold", fontSize: "1.1rem" }}>

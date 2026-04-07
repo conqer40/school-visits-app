@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { adminAddManualVisitAction, checkDuplicateVisitAction } from "@/app/schedule/actions";
+import SearchableSelect from "./SearchableSelect";
 
 export default function AdminManualVisitForm({ schools, supervisors }: any) {
   const [loading, setLoading] = useState(false);
@@ -44,21 +45,23 @@ export default function AdminManualVisitForm({ schools, supervisors }: any) {
       <form id="adminAddVisitForm" action={handleSubmit} style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "flex-end" }}>
         <div style={{ flex: 1, minWidth: "200px" }}>
           <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: "#666" }}>المدرسة:</label>
-          <select name="schoolId" required style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--border)" }}>
-            <option value="">-- اختر مدرسة --</option>
-            {schools.map((s: any) => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
+          <SearchableSelect
+            name="schoolId"
+            required
+            placeholder="-- اختر مدرسة --"
+            options={schools.map((s: any) => ({ value: String(s.id), label: s.name }))}
+            style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--border)" }}
+          />
         </div>
         <div style={{ flex: 1, minWidth: "200px" }}>
           <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: "#666" }}>الموجه:</label>
-          <select name="supervisorId" required style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--border)" }}>
-            <option value="">-- اختر موجه --</option>
-            {supervisors.map((sup: any) => (
-              <option key={sup.id} value={sup.id}>{sup.name}</option>
-            ))}
-          </select>
+          <SearchableSelect
+            name="supervisorId"
+            required
+            placeholder="-- اختر موجه --"
+            options={supervisors.map((sup: any) => ({ value: String(sup.id), label: sup.name }))}
+            style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--border)" }}
+          />
         </div>
         <div style={{ width: "160px" }}>
           <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: "#666" }}>التاريخ:</label>

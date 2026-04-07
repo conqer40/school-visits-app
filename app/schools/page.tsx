@@ -3,6 +3,7 @@ import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import ExcelExportButton from "@/app/components/ExcelExportButton";
+import SearchableSelect from "@/app/components/SearchableSelect";
 import { addSchoolAction, editSchoolAction, deleteSchoolAction } from "./actions";
 import { importSchoolsCSVAction } from "../admin/import-actions";
 
@@ -140,10 +141,15 @@ export default async function SchoolsPage({ searchParams }: { searchParams: Prom
 
             <div>
               <label style={{ display: "block", marginBottom: "0.4rem", fontSize: "0.9rem", fontWeight: "bold" }}>🌅 الوردية:</label>
-              <select name="shift" defaultValue={schoolToEdit?.shift || "صباحي"} style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border)", fontFamily: "inherit" }}>
-                <option value="صباحي">☀️ صباحي</option>
-                <option value="مسائي">🌆 مسائي</option>
-              </select>
+              <SearchableSelect
+                name="shift"
+                defaultValue={schoolToEdit?.shift || "صباحي"}
+                options={[
+                  { value: "صباحي", label: "☀️ صباحي" },
+                  { value: "مسائي", label: "🌆 مسائي" }
+                ]}
+                style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border)", fontFamily: "inherit" }}
+              />
             </div>
             
             <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>

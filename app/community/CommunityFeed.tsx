@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createPostAction, createCommentAction, deletePostAction, deleteCommentAction, toggleLikePostAction } from "./actions";
+import SearchableSelect from "@/app/components/SearchableSelect";
 
 export default function CommunityFeed({ 
   posts, user, isAdmin, specializations, allowedSpecIds, allowedLevels, selectedSpecId, selectedLevel 
@@ -39,15 +40,13 @@ export default function CommunityFeed({
           {(isAdmin || allowedSpecIds.length > 1) && (
             <div style={{ flex: 1, minWidth: "150px" }}>
               <label style={{ fontSize: "0.8rem", fontWeight: "bold", display: "block", marginBottom: "5px", color: "var(--accent-primary)" }}>التخصص التعليمي:</label>
-              <select 
-                value={selectedSpecId} 
-                onChange={(e) => handleFilterChange("spec", e.target.value)}
-                style={{ padding: "0.5rem", borderRadius: "8px", width: "100%", background: "var(--background-light)", border: "1px solid var(--border)" }}
-              >
-                {specializations.filter((s:any) => isAdmin || allowedSpecIds.includes(s.id)).map((s:any) => (
-                  <option key={s.id} value={s.id}>{s.name}</option>
-                ))}
-              </select>
+              <SearchableSelect 
+                name="selectedSpecId"
+                defaultValue={String(selectedSpecId)} 
+                onChange={(value) => handleFilterChange("spec", value)}
+                options={specializations.filter((s:any) => isAdmin || allowedSpecIds.includes(s.id)).map((s:any) => ({ value: String(s.id), label: s.name }))}
+                style={{ width: "100%", padding: "0.5rem", borderRadius: "8px", background: "var(--background-light)", border: "1px solid var(--border)" }}
+              />
             </div>
           )}
 
