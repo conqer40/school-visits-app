@@ -13,7 +13,7 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
   const whereClause: any = {};
   if (day) whereClause.dayOfWeek = day;
   if (school) whereClause.school = { name: { contains: school } };
-  if (supervisor) whereClause.supervisor = { name: { contains: supervisor } };
+  if (supervisor) whereClause.supervisorId = parseInt(supervisor);
   
   if (exactDate) {
     const [year, month, dayNum] = exactDate.split("-").map(Number);
@@ -73,7 +73,12 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
             ))}
           </select>
           <input type="text" name="school" defaultValue={school || ""} placeholder="بحث باسم المدرسة..." style={{ flex: 1, minWidth: "140px", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--border)", fontFamily: "inherit" }} />
-          <input type="text" name="supervisor" defaultValue={supervisor || ""} placeholder="بحث باسم الموجه..." style={{ flex: 1, minWidth: "140px", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--border)", fontFamily: "inherit" }} />
+          <select name="supervisor" defaultValue={supervisor || ""} style={{ flex: 1, minWidth: "140px", padding: "0.6rem", borderRadius: "6px", border: "1px solid var(--border)", fontFamily: "inherit" }}>
+            <option value="">كل الموجهين</option>
+            {serializedSupervisors.map((sup: any) => (
+              <option key={sup.id} value={sup.id}>{sup.name}</option>
+            ))}
+          </select>
           <button type="submit" className="btn-primary" style={{ padding: "0.6rem 1.2rem" }}>بحث</button>
           <Link href="/schedule" style={{ padding: "0.6rem 1rem", textDecoration: "none", color: "#666", border: "1px solid #ccc", borderRadius: "6px", background: "#f5f5f5" }}>
             مسح الفلاتر
