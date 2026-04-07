@@ -13,18 +13,30 @@ export default async function DashboardPage() {
   // If Supervisor, redirect to their schedule
   if (user.role === "SUPERVISOR") redirect("/my-schedule");
 
-  const totalSchools = await prisma.school.count();
-  const totalSupervisors = await prisma.supervisor.count();
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+
+  const monthWhere = {
+    date: {
+      gte: startOfMonth,
+      lte: endOfMonth
+    }
+  };
+
+  const totalSchools = await prisma.school.count({ where: { status: "ACTIVE" } });
+  const totalSupervisors = await prisma.supervisor.count({ where: { isActive: true } });
+  
   const activeVisits = await prisma.visit.count({
-    where: { status: "PENDING" }
+    where: { status: "PENDING", ...monthWhere }
   });
   
   const completedVisits = await prisma.visit.count({
-    where: { status: "COMPLETED" }
+    where: { status: "COMPLETED", ...monthWhere }
   });
 
   const excusedVisits = await prisma.visit.count({
-    where: { status: "EXCUSED" }
+    where: { status: "EXCUSED", ...monthWhere }
   });
 
   const coveragePercent = totalSchools > 0 ? Math.round((completedVisits / totalSchools) * 100) : 0;
